@@ -1,0 +1,32 @@
+{
+    "name": "mylinex/administration",
+    "description": "User permissions roles package",
+    "type": "library",
+    "require": {
+        "spatie/laravel-permission": "dev-master",
+        "laravelcollective/html": "dev-master",
+        "spatie/laravel-activitylog": "dev-master"
+    },
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Chinthaka Dilan F",
+            "email": "ccdilan@gmail.com"
+        }
+    ],
+    "minimum-stability": "dev",
+    "version": "0.0.1",
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Administration\\AdministrationServiceProvider"
+            ]
+        }
+    },
+    "autoload": {
+        "psr-4": {
+            "Administration\\": "/",
+            "Administration\\Seeds\\": "database/seeds/"
+        }
+    }
+}
