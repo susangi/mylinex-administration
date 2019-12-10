@@ -6,6 +6,7 @@ use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\Auth;
 use Spatie\Activitylog\Traits\LogsActivity;
 use Spatie\Permission\Traits\HasRoles;
 
@@ -59,7 +60,11 @@ class User extends Authenticatable
     }
 
     public function hasAnyAccess($permission = []){
+        if (!Auth::user()){
+           abort(403);
+        }
         $roles = $this->roles;
+
         if ($roles[0]->name == 'Super Admin'){
             return true;
         }

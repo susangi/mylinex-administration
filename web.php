@@ -13,6 +13,9 @@ Route::namespace('Administration\Controllers')->group(function () {
         Route::resource('users', 'UserController');
         Route::get('/users/table/data', 'UserController@tableData')->name('users.data');
         Route::put('/users/{user}/reset', 'UserController@resetPassword')->name('users.data');
+
+        Route::resource('activity-logs', 'ActivityLogController');
+        Route::get('/activity-logs/table/data', 'ActivityLogController@tableData')->name('activity-logs.data');
     });
 });
 
