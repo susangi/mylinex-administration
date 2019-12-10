@@ -13,7 +13,8 @@ class ActivityLogController extends Controller
 {
     public function index()
     {
-        $causers = ActivityLog::CausedByList()->get()->pluck('causer.name', 'causer.id');
+//        $causers = ActivityLog::CausedByList()->get()->pluck('causer.name', 'causer.id');
+        $causers = User::all()->pluck('name','id');
         $performed_on = ActivityLog::PerformedOnList()->get()->pluck('subject_type', 'subject_type');
         return (Auth::user()->hasAnyAccess('activity log view')) ?
             view('Administration::activity-logs.index', compact('causers', 'performed_on')) : abort(403);

@@ -63,9 +63,14 @@ class User extends Authenticatable
         if (!Auth::user()){
            abort(403);
         }
+
         $roles = $this->roles;
 
-        if ($roles[0]->name == 'Super Admin'){
+        $user = Auth::user();
+        $is_super_admin = $user->hasRole('Super Admin') ? true : false;
+        $is_admin = $user->hasRole('Admin') ? true : false;
+
+        if (($is_super_admin || $is_admin)) {
             return true;
         }
 

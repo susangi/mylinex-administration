@@ -45,10 +45,10 @@ class ActivityLog extends Model
 
     public function scopeFilterData($query,$daterRange,$performed_on,$causedBy,$activity)
     {
-        $date  = explode(' - ',$daterRange);
-        $start_date = $date[0];
-        $end_date = $date[1];
         if (!empty($daterRange)){
+            $date  = explode(' - ',$daterRange);
+            $start_date = $date[0];
+            $end_date = $date[1];
             $query->whereBetween('created_at',[$start_date,$end_date]);
         }
         if (!empty($performed_on)){
