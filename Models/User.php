@@ -61,11 +61,11 @@ class User extends Authenticatable
 
     public function hasAnyAccess($permission = []){
         if (!Auth::user()){
-           abort(403);
+            abort(403);
         }
 
-        $roles = $this->roles;
-
+        $user = \App\User::with('roles')->find($this->id);
+        $roles = $user->roles;
         $user = Auth::user();
         $is_super_admin = $user->hasRole('Super Admin') ? true : false;
         $is_admin = $user->hasRole('Admin') ? true : false;
