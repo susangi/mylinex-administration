@@ -18,6 +18,7 @@ class PermissionInRoleMiddleware
     public function handle($request, Closure $next, $permission)
     {
         if (app('auth')->guest()) {
+            return redirect('/');
             throw UnauthorizedException::notLoggedIn();
         }
 
@@ -29,6 +30,7 @@ class PermissionInRoleMiddleware
             return $next($request);
         }
 
+        return redirect('/');
         throw UnauthorizedException::forPermissions($permissions);
     }
 }

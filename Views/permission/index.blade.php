@@ -18,7 +18,6 @@
                             <table id="permissionTable" class="table table-hover w-100 display">
                                 <thead>
                                 <tr>
-                                    <th>#</th>
                                     <th>Permission Name</th>
                                     <th>Guard</th>
                                     <th>Action</th>
@@ -88,10 +87,12 @@
 
 @endsection
 @push('styles')
+    @include('layouts.includes.styles.form')
     <link href="{{asset('plugins/datatables/jquery.dataTables.css')}}" rel="stylesheet" type="text/css"/>
 @endpush
 
 @push('scripts')
+    @include('layouts.includes.scripts.form')
     <!-- Data Table JavaScript -->
     <script src="{{asset('plugins/datatables/jquery.dataTables.min.js')}}"></script>
     <script src="{{asset('js/dataTables-data.js')}}"></script>

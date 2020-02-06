@@ -12,10 +12,10 @@ use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable
 {
-    use Notifiable,SoftDeletes,LogsActivity,HasRoles;
+    use Notifiable, SoftDeletes, LogsActivity, HasRoles;
     protected $guard_name = 'web';
     protected static $logName = 'users';
-    protected static $logAttributes = ['name', 'email','password'];
+    protected static $logAttributes = ['name', 'email'];
 
     /**
      * The attributes that are mass assignable.
@@ -23,7 +23,7 @@ class User extends Authenticatable
      * @var array
      */
     protected $fillable = [
-        'name', 'email', 'password','created_by','updated_by',
+        'name', 'email', 'password', 'created_by', 'updated_by',
     ];
 
     /**
@@ -59,12 +59,13 @@ class User extends Authenticatable
             ->orWhere('email', 'like', "%" . $term . "%");
     }
 
-    public function hasAnyAccess($permission = []){
-        if (!Auth::user()){
+    public function hasAnyAccess($permission = [], $isId = false)
+    {
+        if (!Auth::user()) {
             abort(403);
         }
 
-        $user = \App\User::with('roles')->find($this->id);
+        $user = User::with('roles')->find($this->id);
         $roles = $user->roles;
         $user = Auth::user();
         $is_super_admin = $user->hasRole('Super Admin') ? true : false;
@@ -76,8 +77,13 @@ class User extends Authenticatable
 
         $permissions = is_array($permission) ? $permission : [$permission];
 
-        $rolePermissions = Role::whereName($roles[0]->name)->first()->permissions->pluck('name')->toArray();
-        $intersects = array_intersect($permissions,$rolePermissions);
-        return !empty($intersects)?true:false;
+        if ($isId) {
+            $rolePermissions = Role::whereName($roles[0]->name)->first()->permissions->pluck('id')->toArray();
+        } else {
+            $rolePermissions = Role::whereName($roles[0]->name)->first()->permissions->pluck('name')->toArray();
+        }
+
+        $intersects = array_intersect($permissions, $rolePermissions);
+        return !empty($intersects) ? true : false;
     }
 }

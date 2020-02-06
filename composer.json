@@ -5,28 +5,34 @@
     "require": {
         "spatie/laravel-permission": "dev-master",
         "laravelcollective/html": "dev-master",
-        "spatie/laravel-activitylog": "dev-master"
+        "spatie/laravel-activitylog": "dev-master",
+        "baum/baum": "2.0.0-alpha1"
     },
     "license": "MIT",
     "authors": [
         {
             "name": "Chinthaka Dilan F",
             "email": "ccdilan@gmail.com"
+        },
+        {
+            "name": "Lahiru Madusanka",
+            "email": "lahiru@mylinex.com"
         }
     ],
     "minimum-stability": "dev",
-    "version": "1.2",
+    "version": "2.0",
     "extra": {
         "laravel": {
             "providers": [
-                "Administration\\AdministrationServiceProvider"
+                "Administration\\AdministrationServiceProvider",
+                "Administration\\AdministrationEventServiceProvider"
             ]
         }
     },
     "autoload": {
         "psr-4": {
             "Administration\\": "/",
-            "Administration\\Seeds\\": "database/seeds/"
+            "Administration\\Database\\seeds\\": "database/seeds/"
         }
     }
 }

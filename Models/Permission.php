@@ -12,7 +12,7 @@ class Permission extends Model
     protected static $logName = 'permissions';
     protected static $logAttributes = ['*'];
 
-    protected $fillable = ['name', 'guard_name'];
+    protected $fillable = ['name', 'guard_name','menu_id'];
 
     public function scopeTableData($query, $order_column, $order_by_str, $start, $length)
     {

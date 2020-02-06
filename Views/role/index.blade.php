@@ -17,7 +17,6 @@
                             <table id="roleTable" class="table table-hover w-100 display">
                                 <thead>
                                 <tr>
-                                    <th>#</th>
                                     <th>Role Name</th>
                                     <th>Permissions</th>
                                     <th>Guard</th>
@@ -72,7 +71,7 @@
                 </div>
                 <div class="modal-body mt-3 mb-3">
                     {!! Form::open(['method' => 'put', 'id' => 'roleEditForm','class'=>'needs-validation','novalidate']) !!}
-                    @include('Administration::role.form')
+                    @include('Administration::role.form-edit')
                     <div class="float-right">
                         <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Close</button>
                         <button
@@ -88,15 +87,79 @@
 
 @endsection
 @push('styles')
+    @include('layouts.includes.styles.form')
     <link href="{{asset('plugins/datatables/jquery.dataTables.css')}}" rel="stylesheet" type="text/css"/>
 @endpush
 
 @push('scripts')
+    @include('layouts.includes.scripts.form')
     <!-- Data Table JavaScript -->
     <script src="{{asset('plugins/datatables/jquery.dataTables.min.js')}}"></script>
     <script src="{{asset('js/dataTables-data.js')}}"></script>
 
     <script>
+        initCheckBox();
+
+        function initCheckBox() {
+            $(".superParentCheckBox").click(
+                function () {
+                    $(this).parents('.super').find('.parentCheckBox').prop('checked', this.checked);
+                    $(this).parents('.super').find('.childCheckBox').prop('checked', this.checked);
+                }
+            );
+
+            $(".parentCheckBox").click(
+                function () {
+                    $(this).parents('.main-parent').find('.childCheckBox').prop('checked', this.checked);
+
+                    if ($(this).parents('.super').find('.superParentCheckBox').prop('checked') == true && this.checked == false)
+                        $(this).parents('.super').find('.superParentCheckBox').prop('checked', false);
+
+
+                    if (this.checked == true) {
+                        var superFlag = true;
+                        $(this).parents('.super').find('.childCheckBox').each(
+                            function () {
+                                if (this.checked == false)
+                                    superFlag = false;
+                            }
+                        );
+                        $(this).parents('.super').find('.superParentCheckBox').prop('checked', superFlag);
+                    }
+                }
+            );
+            //clicking the last unchecked or checked checkbox should check or uncheck the parent checkbox
+            $('.childCheckBox').click(
+                function () {
+                    if ($(this).parents('.super').find('.superParentCheckBox').prop('checked') == true && this.checked == false)
+                        $(this).parents('.super').find('.superParentCheckBox').prop('checked', false);
+
+                    if ($(this).parents('.main-parent').find('.parentCheckBox').prop('checked') == true && this.checked == false)
+                        $(this).parents('.main-parent').find('.parentCheckBox').prop('checked', false);
+
+                    if (this.checked == true) {
+                        var flag = true;
+                        var superFlag = true;
+                        $(this).parents('.super').find('.childCheckBox').each(
+                            function () {
+                                if (this.checked == false)
+                                    superFlag = false;
+                            }
+                        );
+
+                        $(this).parents('.main-parent').find('.childCheckBox').each(
+                            function () {
+                                if (this.checked == false)
+                                    flag = false;
+                            }
+                        );
+                        $(this).parents('.main-parent').find('.parentCheckBox').prop('checked', flag);
+                        $(this).parents('.super').find('.superParentCheckBox').prop('checked', superFlag);
+                    }
+                }
+            );
+        }
+
         DataTableOption.initDataTable('roleTable', 'roles/table/data');
         FormOptions.initValidation('roleCreateForm');
         FormOptions.initValidation('roleEditForm');
@@ -117,7 +180,19 @@
 
             $("#roleEditForm").attr('action', '/roles/' + id);
             ModalOptions.toggleModal('roleEditModal');
+            $.ajax({
+                url: '/roles/render/form',
+                type: 'GET',
+                data:{id:id},
+                success: function success(result) {
+                    $('#permissionForm').empty();
+                    $('#permissionForm').append(result);
+                    initCheckBox();
+                },
+                error: function error(XMLHttpRequest, textStatus, errorThrown) {
 
+                }
+            })
         }
     </script>)
     <script>

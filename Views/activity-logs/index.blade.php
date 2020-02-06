@@ -17,15 +17,14 @@
                             <table id="activityLogTable" class="table table-hover w-100 display">
                                 <thead>
                                 <tr>
-                                    <th>#</th>
                                     <th>Name</th>
                                     <th>Description</th>
                                     <th>Subject</th>
-                                    <th>Subject Type</th>
+                                    <th>Subject type</th>
                                     <th>Causer</th>
-                                    <th>Causer Type</th>
+                                    <th>Causer type</th>
                                     <th>Properties</th>
-                                    <th>Created AT</th>
+                                    <th>Created at</th>
                                 </tr>
                                 </thead>
                             </table>
@@ -63,11 +62,22 @@
     </div>
 @endsection
 @push('styles')
+    @include('layouts.includes.styles.form')
     <link href="{{asset('plugins/datatables/jquery.dataTables.css')}}" rel="stylesheet" type="text/css"/>
     <link href="{{asset('plugins/daterangepicker/daterangepicker.css')}}" rel="stylesheet" type="text/css"/>
+    <style>
+        .terminal-container{
+            min-height: 200px;
+            width:500px;
+            color: white;
+            background-color: #0d1113;
+            font-family: "Lucida Console";
+        }
+    </style>
 @endpush
 
 @push('scripts')
+    @include('layouts.includes.scripts.form')
     <!-- Data Table JavaScript -->
     <script src="{{asset('plugins/datatables/jquery.dataTables.min.js')}}"></script>
     <script src="{{asset('js/dataTables-data.js')}}"></script>
@@ -75,8 +85,9 @@
     <script src="{{asset('plugins/daterangepicker/daterangepicker.js')}}"></script>
     <script src="{{asset('plugins/jquery-validation/additional-methods.min.js')}}"></script>
 
+
     <script>
-        DataTableOption.initDataTable('activityLogTable', 'activity-logs/table/data');
+        DataTableOption.initDataTable('activityLogTable', 'activity-logs/table/data', [7, 'desc']);
         let rules = {
             'dateRange': {
                 require_from_group: [1,'.validate_group']

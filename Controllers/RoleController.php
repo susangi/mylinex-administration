@@ -8,6 +8,7 @@ use Administration\Models\Role;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\View;
 
 class RoleController extends Controller
 {
@@ -18,8 +19,8 @@ class RoleController extends Controller
      */
     public function index()
     {
-        $permissions = Permission::all()->pluck('name','name');
-        return view('Administration::role.index',compact('permissions'));
+        $permissions = Permission::all()->pluck('name', 'name');
+        return view('Administration::role.index', compact('permissions'));
     }
 
     /**
@@ -35,14 +36,13 @@ class RoleController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param \Illuminate\Http\Request $request
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
     {
         $name = $request->name;
         $permissions = $request->permissions;
-
         $role = Role::firstOrCreate(['name' => $name, 'guard_name' => 'web']);
         $role->syncPermissions($permissions);
 
@@ -53,7 +53,7 @@ class RoleController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  int  $id
+     * @param int $id
      * @return \Illuminate\Http\Response
      */
     public function show($id)
@@ -64,7 +64,7 @@ class RoleController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  int  $id
+     * @param int $id
      * @return \Illuminate\Http\Response
      */
     public function edit($id)
@@ -136,18 +136,17 @@ class RoleController extends Controller
                 $edit_btn = "<i class='icon-md icon-pencil mr-3' onclick=\"editPermission(this)\" data-id='{$role->id}' data-name='{$role->name}' data-permissions='{$role->permissions->pluck('name')}'></i>";
             }
             if ($can_delete) {
-                $url ="'roles/".$role->id."'";
+                $url = "'roles/" . $role->id . "'";
                 $delete_btn = "<i class='icon-md icon-trash' onclick=\"FormOptions.deleteRecord(" . $role->id . ",$url,'roleTable')\"></i>";
             }
 
-            $permissions = [] ;
-            foreach ($role->permissions->pluck('name') as $permission){
+            $permissions = [];
+            foreach ($role->permissions->pluck('name') as $permission) {
 //                $p = '<span class="badge badge-indigo mt-15 mr-10">'.$permission.'</span>';
-               array_push($permissions,$permission.' ');
+                array_push($permissions, $permission . ' ');
             }
 
             $data[$i] = array(
-                ++$key,
                 $role->name,
                 $permissions,
                 $role->guard_name,
@@ -168,5 +167,15 @@ class RoleController extends Controller
         ];
 
         return json_encode($json_data);
+    }
+
+    public function renderForm(Request $request)
+    {
+        $id = $request->id;
+        $role = Role::whereId($id)->first()->permissions;
+        $rolePermissions = collect($role->pluck('name'));
+        $view = View::make('Administration::role.permissions-list', compact('rolePermissions'));
+        $html = $view->render();
+        return $html;
     }
 }

@@ -7,7 +7,9 @@ use Administration\Models\User;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Validator;
 
 class UserController extends Controller
 {
@@ -76,9 +78,11 @@ class UserController extends Controller
      * @param int $id
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
+    public function edit(User $user)
     {
-        //
+        $role=Role::find(Auth::user()->roles[0]->id);
+        $permissions=   $role->permissions->pluck('name');
+        return view('Administration::users.profile', compact('user','permissions'));
     }
 
     /**
@@ -90,8 +94,6 @@ class UserController extends Controller
      */
     public function update(Request $request, User $user)
     {
-
-
         if ($user->email != $request->email) {
             $existUser = User::whereEmail($request->email)->withTrashed()->exists();
             if ($existUser) {
@@ -163,7 +165,6 @@ class UserController extends Controller
             $roles = $user->roles;
 
             $data[$i] = array(
-                ++$key,
                 $user->name,
                 $user->email,
                 $user->getRoleNames(),
@@ -192,5 +193,75 @@ class UserController extends Controller
         $user->password = Hash::make($newPassword);
         $user->save();
         return $this->sendResponse($user, 'Password Reset Successfully');
+    }
+
+
+    public function updatePrimaryData(Request $request, User $user)
+    {
+        if ($user->email != $request->email) {
+            $validator = Validator::make($request->all(), [
+                'email' => 'required|unique:users'
+            ]);
+        }
+
+        if (!empty($request->image)) {
+            $validator = Validator::make($request->all(), [
+                'image' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            ]);
+        }
+
+        $validator = Validator::make($request->all(), [
+            'email' => 'required|max:255',
+            'name' => 'required',
+        ]);
+
+        if ($validator->fails()) {
+            return redirect()
+                ->back()
+                ->with(['alert-type' => 'error', 'message' => $validator->errors()])
+                ->withInput();
+        }
+        $imageName = null;
+        if (!empty($request->image)) {
+            $imageName = $user->id . '.' . request()->image->getClientOriginalExtension();
+            if (file_exists(public_path() . '/images/' . $imageName)) {
+                File::delete(public_path() . '/images/' . $imageName);
+            }
+            request()->image->move(public_path('images/profile/'), $imageName);
+        }
+
+        $user->image = $imageName;
+        $user->email = $request->email;
+        $user->name = $request->name;
+        $user->save();
+
+        return redirect()
+            ->back()
+            ->with(['alert-type' => 'success', 'message' => 'User Account Updated Successfully '])
+            ->withInput();
+
+    }
+
+    public function updatePassword(Request $request, User $user)
+    {
+        $validator = Validator::make($request->all(), [
+            'password' => 'required|confirmed|min:6',
+        ]);
+
+        if ($validator->fails()) {
+            return redirect()
+                ->back()
+                ->with(['alert-type' => 'error', 'message' => $validator->errors()])
+                ->withInput();
+        }
+
+        $newPassword = $request->password;
+        $user->password = Hash::make($newPassword);
+        $user->save();
+        return redirect()
+            ->back()
+            ->with(['alert-type' => 'success', 'message' => 'Password Changed Successfully '])
+            ->withInput();
+
     }
 }

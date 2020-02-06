@@ -129,7 +129,6 @@ class PermissionController extends Controller
                 $delete_btn = "<i class='icon-md icon-trash' onclick=\"FormOptions.deleteRecord(" . $permission->id . ",$url,'permissionTable')\"></i>";
             }
             $data[$i] = array(
-                ++$key,
                 $permission->name,
                 $permission->guard_name,
                 $edit_btn . $delete_btn

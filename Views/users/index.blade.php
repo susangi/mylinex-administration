@@ -17,7 +17,6 @@
                             <table id="userTable" class="table table-hover w-100 display">
                                 <thead>
                                 <tr>
-                                    <th>#</th>
                                     <th>User Name</th>
                                     <th>Email</th>
                                     <th>Role</th>
@@ -115,10 +114,12 @@
     </div>
 @endsection
 @push('styles')
+    @include('layouts.includes.styles.form')
     <link href="{{asset('plugins/datatables/jquery.dataTables.css')}}" rel="stylesheet" type="text/css"/>
 @endpush
 
 @push('scripts')
+    @include('layouts.includes.scripts.form')
     <!-- Data Table JavaScript -->
     <script src="{{asset('plugins/datatables/jquery.dataTables.min.js')}}"></script>
     <script src="{{asset('js/dataTables-data.js')}}"></script>

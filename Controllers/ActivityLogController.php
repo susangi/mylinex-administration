@@ -8,13 +8,14 @@ use Administration\Models\User;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\View;
 
 class ActivityLogController extends Controller
 {
     public function index()
     {
 //        $causers = ActivityLog::CausedByList()->get()->pluck('causer.name', 'causer.id');
-        $causers = User::all()->pluck('name','id');
+        $causers = User::all()->pluck('name', 'id');
         $performed_on = ActivityLog::PerformedOnList()->get()->pluck('subject_type', 'subject_type');
         return (Auth::user()->hasAnyAccess('activity log view')) ?
             view('Administration::activity-logs.index', compact('causers', 'performed_on')) : abort(403);
@@ -29,23 +30,22 @@ class ActivityLogController extends Controller
         $length = $request->length;
         $order_by_str = $order_by[0]['dir'];
 
-        $columns = ['id', 'log_name', 'description', 'subject_id', 'subject_type', 'causer_id', 'causer_type'];
+        $columns = ['id', 'log_name', 'description', 'subject_id', 'subject_type', 'causer_id', 'causer_type', 'properties', 'created_at'];
         $order_column = $columns[$order_by[0]['column']];
 
         $activityLogs = ActivityLog::tableData($order_column, $order_by_str, $start, $length);
 
-        if ($request->filter){
+        if ($request->filter) {
             $daterRange = $request->date_range;
             $performed_on = $request->performed_on;
             $causedBy = $request->caused_by;
             $activity = $request->log_activity;
             $activityLogs = $activityLogs->FilterData($daterRange, $performed_on, $causedBy, $activity)->get();
             $activityLogsCount = $activityLogs->count();
-        }
-        else if (is_null($search) || empty($search) && is_null($request->filter)) {
+        } else if (is_null($search) || empty($search) && is_null($request->filter)) {
             $activityLogs = $activityLogs->get();
             $activityLogsCount = ActivityLog::all()->count();
-        }else {
+        } else {
             $activityLogs = $activityLogs->searchData($search)->get();
             $activityLogsCount = $activityLogs->count();
         }
@@ -73,23 +73,37 @@ class ActivityLogController extends Controller
                 $result_array = array_diff($it_1, $it_2);
             }
 
-            $causer = ($causer_type == 'User') ? User::whereId($log->causer_id)->first()->name : $log->causer_id;
-            $subject = ($subject_type == 'User') ? User::whereId($log->subject_id)->first()->name : $log->subject_id;
-
+            $causer = ($causer_type == 'User') ? User::whereId($log->causer_id)->withTrashed()->first()->name : $log->causer_id;
+            $subject = ($subject_type == 'User') ? User::whereId($log->subject_id)->withTrashed()->first()->name : $log->subject_id;
 
             if (empty($result_array[0])) {
 //                echo "they are same";
+            } else {
+
             }
+//
+//            $tmp = collect($result_array);
+//            $properties = $tmp->map(function ($item, $key) {
+//                if (!is_array($item)){
+//                    return " $key=>$item";
+//                } else {
+//                    return " $key=>".implode(",",$item);
+//                }
+//            })->flatten()->implode(",");
+//
+            
+            $js = json_encode($result_array, JSON_PRETTY_PRINT);
+            $jsonView = '<div class=""><textarea class="terminal-container">' . $js . '</textarea></div>';
+
 
             $data[$i] = array(
-                ++$key,
                 $log->log_name,
                 $log->description,
                 $subject,
                 $subject_type,
                 $causer,
                 $causer_type,
-                json_encode($result_array),
+                $jsonView,
                 $log->created_at,
             );
             $i++;
