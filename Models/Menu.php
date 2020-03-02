@@ -4,11 +4,12 @@ namespace Administration\Models;
 
 use Baum\NestedSet\Node as WorksAsNestedSet;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\Auth;
 
 class Menu extends Model
 {
-    use WorksAsNestedSet;
+    use WorksAsNestedSet,SoftDeletes;
     protected $table = 'menu';
     protected $fillable = ['title', 'url', 'description', 'permissions', 'parent_id', 'left', 'right', 'depth'];
     protected $parentColumnName = 'parent_id';
