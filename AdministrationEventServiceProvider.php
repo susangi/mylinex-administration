@@ -3,6 +3,7 @@
 namespace Administration;
 
 use Administration\Listeners\LoginAttempt;
+use Administration\Listeners\LogoutAttempt;
 use Illuminate\Auth\Events\Login;
 use Illuminate\Auth\Events\Logout;
 use Illuminate\Auth\Events\Registered;
@@ -20,6 +21,9 @@ class AdministrationEventServiceProvider extends ServiceProvider
         Login::class=>[
             LoginAttempt::class,
         ],
+        Logout::class=>[
+            LogoutAttempt::class,
+        ]
     ];
 
     /**

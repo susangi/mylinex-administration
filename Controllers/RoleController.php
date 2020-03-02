@@ -44,8 +44,8 @@ class RoleController extends Controller
         $name = $request->name;
         $permissions = $request->permissions;
         $role = Role::firstOrCreate(['name' => $name, 'guard_name' => 'web']);
-        $role->syncPermissions($permissions);
-
+        $role = \Spatie\Permission\Models\Role::find($role->id);
+        $role->givePermissionTo($permissions);
         $msg = ($role->wasRecentlyCreated) ? 'Role Created Successfully' : 'Role Already Exists';
         return $this->sendResponse($role, $msg);
     }
@@ -84,7 +84,11 @@ class RoleController extends Controller
         $role->name = $request->name;
         $permissions = $request->permissions;
         $role->save();
-        $role->syncPermissions($permissions);
+
+        $role = \Spatie\Permission\Models\Role::find($role->id);
+        $currentPermissions= $role->getAllPermissions();
+        $role->revokePermissionTo($currentPermissions);
+        $role->givePermissionTo($permissions);
         return $this->sendResponse($role, 'Role Updated Successfully');
 
     }
@@ -140,8 +144,12 @@ class RoleController extends Controller
                 $delete_btn = "<i class='icon-md icon-trash' onclick=\"FormOptions.deleteRecord(" . $role->id . ",$url,'roleTable')\"></i>";
             }
 
-            $permissions = [];
-            foreach ($role->permissions->pluck('name') as $permission) {
+            $permissions=[];
+
+            $role = \Spatie\Permission\Models\Role::find($role->id);
+            $permissions_list = $role->getAllPermissions();
+
+            foreach ($permissions_list->pluck('name') as $permission) {
 //                $p = '<span class="badge badge-indigo mt-15 mr-10">'.$permission.'</span>';
                 array_push($permissions, $permission . ' ');
             }
@@ -172,8 +180,10 @@ class RoleController extends Controller
     public function renderForm(Request $request)
     {
         $id = $request->id;
-        $role = Role::whereId($id)->first()->permissions;
-        $rolePermissions = collect($role->pluck('name'));
+        $role = \Spatie\Permission\Models\Role::findById($id);
+
+        $permissions = $role->getAllPermissions();
+        $rolePermissions = collect($permissions->pluck('name'));
         $view = View::make('Administration::role.permissions-list', compact('rolePermissions'));
         $html = $view->render();
         return $html;

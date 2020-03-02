@@ -52,4 +52,9 @@ class Menu extends Model
         }
         return $permissionsList;
     }
+
+    public function parentMenu(){
+        return $this->belongsTo(Menu::class,'parent_id','id');
+    }
+
 }

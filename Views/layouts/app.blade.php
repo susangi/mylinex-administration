@@ -46,7 +46,8 @@
                             Dashboard
                         </a>
                     </li>
-                    {!! $menu !!}
+{{--                    {!! $menu !!}--}}
+                    <div id="menu"></div>
                 </ul>
             </div>
 
@@ -132,6 +133,8 @@
 <script src="{{asset('js/modal.js')}}"></script>
 <script src="{{asset('js/dataTable.js')}}"></script>
 <script src="{{asset('js/FormOptions.js')}}"></script>
+
+
 
 <script>
     @if(Session::has('message'))

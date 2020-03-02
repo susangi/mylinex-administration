@@ -9,9 +9,10 @@ use Illuminate\Auth\Events\Logout;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Support\Facades\Event;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Request;
 
-class LoginAttempt
+class LogoutAttempt
 {
     /**
      * Create the event listener.
@@ -29,12 +30,10 @@ class LoginAttempt
      * @param  Login  $event
      * @return void
      */
-    public function handle(Login $event)
+    public function handle(Logout $event)
     {
-       $user=$event->user;
-       $user->last_login=Carbon::now();
-       $user->save();
+      $id =$event->user->id;
+      $file=$id.'.blade.php';
+      File::delete(resource_path() . '/views/user_menu/'.$file);
     }
-
-
 }
