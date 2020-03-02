@@ -46,7 +46,7 @@
                             Dashboard
                         </a>
                     </li>
-{{--                    {!! $menu !!}--}}
+                    {!! $menu !!}
                     <div id="menu"></div>
                 </ul>
             </div>
