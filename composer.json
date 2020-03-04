@@ -25,7 +25,7 @@
     "extra": {
         "laravel": {
             "providers": [
-                "Administration\\AdminitrationSeviceProvider",
+                "Administration\\AdministrationServiceProvider",
                 "Administration\\AdministrationEventServiceProvider"
             ]
         }
