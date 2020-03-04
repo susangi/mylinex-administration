@@ -1,9 +1,9 @@
 <?php
 
 Route::namespace('Administration\Controllers')->group(function () {
-    Route::middleware(['web', 'auth','permission_in_role'])->group(function () {
+    Route::middleware(['web', 'auth', 'permission_in_role'])->group(function () {
 
-        Route::get('/documentation', 'DocumentationController@documentation')->name('doc-home');
+        Route::get('/documentation', 'DocumentationController@documentation')->middleware('role_or_permission:Super Admin|Admin|permissions show|permissions index|permissions edit|permissions create|permissions delete')->name('doc-home');
         Route::get('/doc-contact', 'DocumentationController@contact')->name('doc-contact');
         Route::resource('doc', 'DocumentationController');
         Route::post('/send-mail', 'DocumentationController@sendMail')->name('doc-send-mail');
@@ -22,7 +22,9 @@ Route::namespace('Administration\Controllers')->group(function () {
         Route::get('/roles/render/form', 'RoleController@renderForm')->name('roles.form');
 
         Route::resource('users', 'UserController');
+//        Route::resource('users', 'UserController')->middleware('role_or_permission:Super Admin|Admin|users show|users index|users edit|users create|users delete');
         Route::get('/users/table/data', 'UserController@tableData')->name('users.data');
+        Route::get('/users/unlock/{user}', 'UserController@unlock')->name('users.unlock');
         Route::put('/users/{user}/reset', 'UserController@resetPassword')->name('users.data');
         Route::get('/profile/{user}/', 'UserController@edit')->name('users.profile');
         Route::post('/profile/{user}/update', 'UserController@updatePrimaryData')->name('users.update');
@@ -37,3 +39,6 @@ Route::namespace('Administration\Controllers')->group(function () {
     });
 });
 
+Route::middleware(['web'])->group(function () {
+    Route::post('user-login', 'Administration\Controllers\LoginController@login')->name('user.login');
+});

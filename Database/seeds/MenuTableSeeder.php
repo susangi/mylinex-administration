@@ -45,6 +45,7 @@ class MenuTableSeeder extends Seeder
              Permission::firstOrCreate(['name' => 'users edit' ,'guard_name' => 'web']),
              Permission::firstOrCreate(['name' => 'users delete' ,'guard_name' => 'web']),
              Permission::firstOrCreate(['name' => 'reset password' ,'guard_name' => 'web']),
+             Permission::firstOrCreate(['name' => 'reset attempts' ,'guard_name' => 'web']),
         ]);
 
         $child3 = $root->children()->firstOrCreate(['title' => 'Permissions', 'url' => 'permissions.index']);

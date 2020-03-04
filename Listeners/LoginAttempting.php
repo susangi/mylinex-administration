@@ -3,6 +3,7 @@
 namespace Administration\Listeners;
 
 use Carbon\Carbon;
+use Illuminate\Auth\Events\Attempting;
 use Illuminate\Auth\Events\Lockout;
 use Illuminate\Auth\Events\Login;
 use Illuminate\Auth\Events\Logout;
@@ -11,7 +12,7 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Request;
 
-class LoginAttempt
+class LoginAttempting
 {
     /**
      * Create the event listener.
@@ -29,11 +30,9 @@ class LoginAttempt
      * @param Login $event
      * @return void
      */
-    public function handle(Login $event)
+    public function handle(Attempting $event)
     {
-        $user = $event->user;
-        $user->last_login = Carbon::now();
-        $user->save();
+
     }
 
 

@@ -19,11 +19,11 @@
     <!-- Toastr CSS -->
     <link href="{{asset('plugins/jquery-toast-plugin/jquery.toast.min.css')}}" rel="stylesheet" type="text/css">
 
-    @include('layouts.includes.styles.fonts')
+@include('layouts.includes.styles.fonts')
 
-    @stack('styles')
+@stack('styles')
 
-    <!-- Custom CSS -->
+<!-- Custom CSS -->
     <link href="{{asset('css/style.css')}}" rel="stylesheet" type="text/css">
 
 
@@ -75,17 +75,36 @@
 
 <!-- Slimscroll JavaScript -->
 <script src="{{asset('plugins/jquery-slimscroll/jquery.slimscroll.js')}}"></script>
+<script src="{{asset('plugins/jquery-toast-plugin/jquery.toast.min.js')}}"></script>
 
 <script src="{{asset('js/notifications.js')}}"></script>
 <script src="{{asset('js/FormOptions.js')}}"></script>
 
 <script src="{{asset('plugins/jquery-validation/jquery.validate.js')}}"></script>
-
+<script src="{{asset('js/notifications.js')}}"></script>
 <script>
+        @if(Session::has('message'))
+    let type = "{{ Session::get('alert-type', 'info') }}";
+    let msg = "{{ Session::get('message') }}";
+    switch (type) {
+        case 'info':
+            Notifications.showSuccessMsg(msg);
+            break;
+        case 'warning':
+            Notifications.showSuccessMsg(msg);
+            break;
+        case 'success':
+            Notifications.showSuccessMsg(msg);
+            break;
+        case 'error':
+            Notifications.showErrorMsg(msg);
+            break;
+    }
+    @endif
 
     /*Feather Icon*/
     var featherIcon = $('.feather-icon');
-    if( featherIcon.length > 0 ){
+    if (featherIcon.length > 0) {
         feather.replace();
     }
 
@@ -97,7 +116,7 @@
                 error.insertAfter(element);
             }
         },
-        success: function (error,element) {
+        success: function (error, element) {
             error.remove();
             element.classList.remove('error-element');
         }

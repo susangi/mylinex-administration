@@ -9,10 +9,11 @@
             <div class="col-xl-7 pa-0">
                 <div class="auth-form-wrap py-xl-0 py-50">
                     <div class="auth-form w-xxl-55 w-xl-75 w-sm-90 w-xs-100">
-                        <form method="POST" action="{{ route('login') }}" id="loginForm">
+                        <form method="POST" action="{{ route('user.login') }}" id="loginForm">
                             @csrf
                             <h1 class="display-5 mb-10">Welcome Back </h1>
                             <p class="mb-30">Sign in to your account and enjoy unlimited perks.</p>
+
                             <div class="form-group">
                                 <input id="email" placeholder="Email" type="email" class="form-control @error('email') is-invalid @enderror"
                                        name="email" value="{{ old('email') }}" required autocomplete="email" autofocus>

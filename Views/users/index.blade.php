@@ -145,8 +145,41 @@
 
         function reset(role) {
             let id = role.dataset.id;
-            $("#userResetForm").attr('action', '/users/' + id +'/reset');
+            $("#userResetForm").attr('action', '/users/' + id + '/reset');
             ModalOptions.toggleModal('userResetModal');
+        }
+
+        function resetAttempt(user) {
+            let id = user.dataset.id;
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "Do you want to unlocked?",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes, unlocked it!'
+            }).then((result) => {
+                $.ajax({
+                    type: "get",
+                    url: '/users/unlock/' + id,
+                    success: function (response) {
+                        if (response.success) {
+                            Swal.fire(
+                                'Unlocked!',
+                                'Your file has been deleted.',
+                                'success'
+                            )
+                        } else {
+                            Swal.fire("Error!", "Something went wrong", "error");
+                        }
+                    },
+                    error: function (jqXHR, textStatus, errorThrown) {
+                        Swal.fire("Error!", "Something went wrong", "error");
+                    }
+                });
+
+            })
         }
     </script>
 @endpush

@@ -80,9 +80,9 @@ class UserController extends Controller
      */
     public function edit(User $user)
     {
-        $role=Role::find(Auth::user()->roles[0]->id);
-        $permissions=   $role->permissions->pluck('name');
-        return view('Administration::users.profile', compact('user','permissions'));
+        $role = Role::find(Auth::user()->roles[0]->id);
+        $permissions = $role->permissions->pluck('name');
+        return view('Administration::users.profile', compact('user', 'permissions'));
     }
 
     /**
@@ -135,6 +135,7 @@ class UserController extends Controller
         $order_column = $columns[$order_by[0]['column']];
 
         $users = User::tableData($order_column, $order_by_str, $start, $length);
+
         if (is_null($search) || empty($search)) {
             $users = $users->get();
             $user_count = Role::all()->count();
@@ -148,27 +149,38 @@ class UserController extends Controller
         $edit_btn = null;
         $delete_btn = null;
         $reset_btn = null;
-        $can_reset = ($user->hasPermissionTo('reset password') || $user->hasAnyRole(['Super Admin','Admin'])) ? 1 : 0;
-        $can_edit = ($user->hasPermissionTo('users edit') || $user->hasAnyRole(['Super Admin','Admin'])) ? 1 : 0;
-        $can_delete = ($user->hasPermissionTo('users delete') || $user->hasAnyRole(['Super Admin','Admin'])) ? 1 : 0;
+        $attempts_btn = null;
+
+        $can_reset = ($user->hasPermissionTo('reset password') || $user->hasAnyRole(['Super Admin', 'Admin'])) ? 1 : 0;
+        $can_edit = ($user->hasPermissionTo('users edit') || $user->hasAnyRole(['Super Admin', 'Admin'])) ? 1 : 0;
+        $can_delete = ($user->hasPermissionTo('users delete') || $user->hasAnyRole(['Super Admin', 'Admin'])) ? 1 : 0;
+        $reset_attempts = ($user->hasPermissionTo('reset attempts') || $user->hasAnyRole(['Super Admin', 'Admin'])) ? 1 : 0;
+
         foreach ($users as $key => $user) {
+            if ($reset_attempts) {
+                if ($user->login_attempts>3){
+                    $attempts_btn = "<i title='Unlock user' class='icon-md icon-lock-open mr-3' onclick=\"resetAttempt(this)\" data-id='{$user->id}'></i>";
+                }
+            }
+
             if ($can_reset) {
-                $reset_btn = "<i class='icon-md icon-lock-open mr-3' onclick=\"reset(this)\" data-id='{$user->id}'></i>";
+                $reset_btn = "<i title='Reset password' class='icon-md icon-action-undo mr-3' onclick=\"reset(this)\" data-id='{$user->id}'></i>";
             }
             if ($can_edit) {
-                $edit_btn = "<i class='icon-md icon-pencil mr-3' onclick=\"edit(this)\" data-id='{$user->id}' data-email='{$user->email}' data-name='{$user->name}' data-roles='{$user->getRoleNames()[0]}'></i>";
+                $edit_btn = "<i title='Edit user' class='icon-md icon-pencil mr-3' onclick=\"edit(this)\" data-id='{$user->id}' data-email='{$user->email}' data-name='{$user->name}' data-roles='{$user->getRoleNames()[0]}'></i>";
             }
             if ($can_delete) {
                 $url = "'users/" . $user->id . "'";
-                $delete_btn = "<i class='icon-md icon-trash mr-3' onclick=\"FormOptions.deleteRecord(" . $user->id . ",$url,'userTable')\"></i>";
+                $delete_btn = "<i title='Delete user' class='icon-md icon-trash mr-3' onclick=\"FormOptions.deleteRecord(" . $user->id . ",$url,'userTable')\"></i>";
             }
+
             $roles = $user->roles;
 
             $data[$i] = array(
                 $user->name,
                 $user->email,
                 $user->getRoleNames(),
-                $edit_btn . $delete_btn . $reset_btn
+                $edit_btn . $delete_btn . $reset_btn . $attempts_btn
             );
             $i++;
         }
@@ -262,6 +274,14 @@ class UserController extends Controller
             ->back()
             ->with(['alert-type' => 'success', 'message' => 'Password Changed Successfully '])
             ->withInput();
+
+    }
+
+    public function unlock(Request $request, User $user)
+    {
+        $user->login_attempts = 0;
+        $user->save();
+        return $this->sendResponse($user, 'User Unlocked Successfully');
 
     }
 }
