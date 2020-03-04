@@ -156,8 +156,8 @@ class ChangeLogController extends Controller
         $i = 0;
         $edit_btn = null;
         $delete_btn = null;
-        $can_edit = ($user->hasAnyAccess('changelog edit')) ? 1 : 0;
-        $can_delete = ($user->hasAnyAccess('changelog delete')) ? 1 : 0;
+        $can_edit = ($user->hasPermissionTo('changelog edit')) ? 1 : 0;
+        $can_delete = ($user->hasPermissionTo('changelog delete')) ? 1 : 0;
 
         foreach ($changelogs as $key => $changelog) {
             if ($can_edit) {

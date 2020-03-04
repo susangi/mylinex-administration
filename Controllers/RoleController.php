@@ -132,8 +132,8 @@ class RoleController extends Controller
         $i = 0;
         $edit_btn = null;
         $delete_btn = null;
-        $can_edit = ($user->hasAnyAccess('roles edit')) ? 1 : 0;
-        $can_delete = ($user->hasAnyAccess('roles delete')) ? 1 : 0;
+        $can_edit = ($user->hasPermissionTo('roles edit') || $user->hasAnyRole(['Super Admin','Admin'])) ? 1 : 0;
+        $can_delete = ($user->hasPermissionTo('roles delete') || $user->hasAnyRole(['Super Admin','Admin'])) ? 1 : 0;
 
         foreach ($roles as $key => $role) {
             if ($can_edit) {

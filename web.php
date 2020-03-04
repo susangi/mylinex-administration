@@ -1,7 +1,7 @@
 <?php
 
 Route::namespace('Administration\Controllers')->group(function () {
-    Route::middleware(['web', 'auth'])->group(function () {
+    Route::middleware(['web', 'auth','permission_in_role'])->group(function () {
 
         Route::get('/documentation', 'DocumentationController@documentation')->name('doc-home');
         Route::get('/doc-contact', 'DocumentationController@contact')->name('doc-contact');
@@ -14,7 +14,7 @@ Route::namespace('Administration\Controllers')->group(function () {
 
         Route::get('/home', 'HomeController@index')->name('home');
 
-        Route::resource('permissions', 'PermissionController')->middleware(['permission_in_role:permissions index']);
+        Route::resource('permissions', 'PermissionController');
         Route::get('/permissions/table/data', 'PermissionController@tableData')->name('permissions.data');
 
         Route::resource('roles', 'RoleController');

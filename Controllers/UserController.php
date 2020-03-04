@@ -148,9 +148,9 @@ class UserController extends Controller
         $edit_btn = null;
         $delete_btn = null;
         $reset_btn = null;
-        $can_reset = ($user->hasAnyAccess('reset password')) ? 1 : 0;
-        $can_edit = ($user->hasAnyAccess('users edit')) ? 1 : 0;
-        $can_delete = ($user->hasAnyAccess('users delete')) ? 1 : 0;
+        $can_reset = ($user->hasPermissionTo('reset password') || $user->hasAnyRole(['Super Admin','Admin'])) ? 1 : 0;
+        $can_edit = ($user->hasPermissionTo('users edit') || $user->hasAnyRole(['Super Admin','Admin'])) ? 1 : 0;
+        $can_delete = ($user->hasPermissionTo('users delete') || $user->hasAnyRole(['Super Admin','Admin'])) ? 1 : 0;
         foreach ($users as $key => $user) {
             if ($can_reset) {
                 $reset_btn = "<i class='icon-md icon-lock-open mr-3' onclick=\"reset(this)\" data-id='{$user->id}'></i>";

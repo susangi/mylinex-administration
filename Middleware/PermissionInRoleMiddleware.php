@@ -26,7 +26,7 @@ class PermissionInRoleMiddleware
             ? $permission
             : explode('|', $permission);
 
-        if (app('auth')->user()->hasAnyAccess($permissions)) {
+        if (app('auth')->user()->hasPermissionTo($permissions)) {
             return $next($request);
         }
 

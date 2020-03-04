@@ -4,6 +4,7 @@ namespace Administration\Controllers;
 
 use Administration\Models\Menu;
 use Administration\Models\Permission;
+use Administration\Models\User;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -19,10 +20,6 @@ class MenuController extends Controller
      */
     public function index()
     {
-        $roots = Menu::roots()->get();
-        foreach ($roots as $root) {
-            $isAllowed = app('auth')->user()->hasAnyAccess($root->permissions(), true);
-        }
 
         $roots = Menu::roots()->get()->pluck('title', 'id');
         return view('Administration::menu.index', compact('roots'));
@@ -213,8 +210,8 @@ class MenuController extends Controller
         $i = 0;
         $edit_btn = null;
         $delete_btn = null;
-        $can_edit = ($user->hasAnyAccess('menu edit')) ? 1 : 0;
-        $can_delete = ($user->hasAnyAccess('menu delete')) ? 1 : 0;
+        $can_edit = ($user->hasPermissionTo('menu edit') || $user->hasAnyRole(['Super Admin','Admin']) ) ? 1 : 0;
+        $can_delete = ($user->hasPermissionTo('menu delete') || $user->hasAnyRole(['Super Admin','Admin'])) ? 1 : 0;
 
         foreach ($menu as $key => $item) {
             if ($can_edit) {

@@ -17,8 +17,7 @@ class ActivityLogController extends Controller
 //        $causers = ActivityLog::CausedByList()->get()->pluck('causer.name', 'causer.id');
         $causers = User::all()->pluck('name', 'id');
         $performed_on = ActivityLog::PerformedOnList()->get()->pluck('subject_type', 'subject_type');
-        return (Auth::user()->hasAnyAccess('activity log view')) ?
-            view('Administration::activity-logs.index', compact('causers', 'performed_on')) : abort(403);
+        return view('Administration::activity-logs.index', compact('causers', 'performed_on')) ;
     }
 
     public function tableData(Request $request, $filterData = false)
@@ -91,7 +90,7 @@ class ActivityLogController extends Controller
 //                }
 //            })->flatten()->implode(",");
 //
-            
+
             $js = json_encode($result_array, JSON_PRETTY_PRINT);
             $jsonView = '<div class=""><textarea class="terminal-container">' . $js . '</textarea></div>';
 
