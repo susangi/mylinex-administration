@@ -3,6 +3,7 @@
 namespace Administration\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Auth;
 use Spatie\Activitylog\Traits\LogsActivity;
 
 class ActivityLog extends Model
@@ -26,9 +27,23 @@ class ActivityLog extends Model
 
     public function scopeTableData($query, $order_column, $order_by_str, $start, $length)
     {
+        $user = Auth::user();
+        $is_super_admin = $user->hasRole('Super Admin') ? true : false;
+        $is_admin = $user->hasRole('Admin') ? true : false;
+        if (!($is_super_admin || $is_admin)){
+            $query->whereCauserId($user->id);
+        }
         return $query->orderBy($order_column, $order_by_str)
             ->offset($start)
             ->limit($length);
+    }
+
+    public function scopeFilterByUser($query,$is_admin,$user_id)
+    {
+        if (!$is_admin){
+            $query->whereCauserId($user_id);
+        }
+        return $query;
     }
 
     public function scopeSearchData($query, $term)
