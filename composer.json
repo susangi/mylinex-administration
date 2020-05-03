@@ -7,7 +7,7 @@
         "laravelcollective/html": "^6.0",
         "spatie/laravel-activitylog": "^3.9",
         "baum/baum": "v2.x-dev",
-        "laravel/ui": "^1.1"
+        "laravel/ui": "^2.0"
     },
     "license": "MIT",
     "authors": [
@@ -21,7 +21,7 @@
         }
     ],
     "minimum-stability": "dev",
-    "version": "3.13",
+    "version": "3.14",
     "extra": {
         "laravel": {
             "providers": [
