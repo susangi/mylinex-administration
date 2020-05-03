@@ -6,8 +6,10 @@ use Administration\Models\Menu;
 use Administration\Models\Role;
 use Administration\Models\User;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Support\Facades\Request;
 
 class AdministrationServiceProvider extends ServiceProvider
 {
@@ -49,6 +51,7 @@ class AdministrationServiceProvider extends ServiceProvider
                 $user_id = Auth::id();
                 $user = User::find($user_id);
                 $menu_ids = [];
+                $current_route = Request::route()->getName();
 
                 if ($user->hasRole(['Super Admin', 'Admin'])) {
                     $menu_ids = Menu::with('parentMenu')->get()->pluck('id');
@@ -59,77 +62,87 @@ class AdministrationServiceProvider extends ServiceProvider
 
                 $menus = Menu::whereIn('id', $menu_ids)->with('parentMenu')->get();
 
-
-
                 $parent = collect();
                 foreach ($menus as $menu) {
                     $parentMenu = $menu->parentMenu;
-                    if (!empty($parentMenu)){
+                    if (!empty($parentMenu->parentMenu)){
+                        $menus->push($parentMenu);
+                        $parent->push($parentMenu->parentMenu);
+                    }
+                    if (!empty($parentMenu) && empty($parentMenu->parent_id)){
                         $parent->push($parentMenu);
                     }
                 }
-
                 $parents = $parent->unique();
+                $menus = $menus->unique();
 
                 $html = '';
                 foreach ($parents as $parent) {
-                    $html .= '<li class="nav-item dropdown show-on-hover">';
+
+                    $inner_html = "";
+                    $submenu_html = "";
+                    $category_act = "";
+                    foreach ($menus as $menu) {
+
+                        if (empty($menu->url) && !empty($menu->parent_id)) {
+
+                            if ($menu->parent_id == $parent->id){
+                                $childrens = $menu->children()->get();
+                                $inner_submenu_html = "";
+                                foreach ($childrens as $children) {
+                                    if ($menu->id == $children->parent_id) {
+                                        $page_act = ($children->url == $current_route) ? 'active' : '';
+                                        if ($children->url == $current_route){
+                                            $category_act = "active";
+                                        }
+                                        $inner_submenu_html .= "<a href='" . route($children->url) . "'  class='dropdown-item $page_act'>" . $children->title . "</a>";
+                                    }
+                                }
+
+                                $inner_html .= "<ul class='navbar-nav'>";
+                                $inner_html .= "<li class='nav-item dropdown dropright show-on-hover $category_act'>";
+                                $inner_html .= " <a class='nav-link dropdown-toggle' href='#' role='button' data-toggle='dropdown' aria-haspopup='true' aria-expanded='false'>";
+                                $inner_html .= $menu->title;
+                                $inner_html .= '</a>';
+                                $inner_html .= '<div class="dropdown-menu" data-dropdown-in="fadeIn" data-dropdown-out="fadeOut">';
+                                $inner_html .= '<div class="sub-dropdown-menu show-on-hover">';
+                                $inner_html .= $inner_submenu_html;
+                                $inner_html .= '</div>';
+                                $inner_html .= '</div>';
+                                $inner_html .= '</li>';
+                                $inner_html .= '</ul>';
+                            }
+
+
+                        } else {
+                            if ($parent->id == $menu->parent_id) {
+                                $page_act = ($menu->url == $current_route) ? 'active' : '';
+                                if ($menu->url == $current_route){
+                                    $category_act = "active";
+                                }
+                                $inner_html .= "<a href='" . route($menu->url) . "'  class='dropdown-item $page_act'>" . $menu->title . "</a>";
+                            }
+                        }
+
+                    }
+
+                    $html .= "<li class='nav-item dropdown show-on-hover $category_act'>";
                     $html .= " <a class='nav-link dropdown-toggle' href='#' role='button' data-toggle='dropdown' aria-haspopup='true' aria-expanded='false'>";
                     $html .= $parent->title;
                     $html .= '</a>';
 
                     $html .= '<div class="dropdown-menu" data-dropdown-in="fadeIn" data-dropdown-out="fadeOut">';
                     $html .= '<div class="sub-dropdown-menu show-on-hover">';
-                    foreach ($menus as $menu) {
-                        if ($parent->id == $menu->parent_id) {
-                            $html .= "<a href=" . route($menu->url) . "  class='dropdown-item '>" . $menu->title . "</a>";
-                        }
-                    }
+
+                    $html .= $inner_html;
+
                     $html .= '</div>';
                     $html .= '</div>';
                     $html .= '</li>';
                 }
             }
-            View::share('menu', $html);
 
-//            $request = $this->app->request;
-//            $routeName = $request->route()->getName();
-//            $html = null;
-//            $roots = Menu::roots()->get();
-//            if (Auth::check()) {
-//                foreach ($roots as $root) {
-//                    $permissionList = $root->derivedPermissions();
-//                    $isAllowed = app('auth')->user()->hasAnyAccess($permissionList, true);
-//                    $html .= '<li class="nav-item dropdown show-on-hover">';
-//
-//                    if ($isAllowed) {
-//                        $routeList = collect($root->descendants()->get()->pluck('url'));
-//                        $isActiveParent = ($routeList->contains($routeName))?'active':null;
-//
-//                        $html .= " <a class='nav-link dropdown-toggle ".$isActiveParent."' href='#' role='button' data-toggle='dropdown' aria-haspopup='true' aria-expanded='false'>";
-//                        $html .= $root->title;
-//                        $html .= '</a>';
-//
-//                        $html .= '<div class="dropdown-menu" data-dropdown-in="fadeIn" data-dropdown-out="fadeOut">';
-//                        $html .= '<div class="sub-dropdown-menu show-on-hover">';
-//
-//                        foreach ($root->descendants()->get() as $child) {
-//                            $childPermissionList = Menu::find($child->id)->permissions()->get()->pluck('id');
-//                            $isAllowed = app('auth')->user()->hasAnyAccess($childPermissionList, true);
-//                            $isActive = ($routeName == $child->url) ? 'active' : null;
-//
-//                            if ($isAllowed) {
-//                                $html .= "<a href=" . route($child->url) . "  class='dropdown-item " . $isActive . "'>" . $child->title . "</a>";
-//                            }
-//                        }
-//
-//                        $html .= '</div>';
-//                        $html .= '</div>';
-//                    }
-//                    $html .= '</li>';
-//                }
-//            }
-//            View::share('menu', $html);
+            View::share('menu', $html);
         });
     }
 }

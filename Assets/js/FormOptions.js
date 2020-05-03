@@ -16,7 +16,7 @@ FormOptions = {
                         if (result.success) {
                             let table = $(table_id).DataTable();
                             table.ajax.reload();
-                            Notifications.showSuccessMsg(result.message);
+                            (result.warning) ? Notifications.showWarningMsg(result.message) : Notifications.showSuccessMsg(result.message);
                         } else {
                             Notifications.showErrorMsg(result.message);
                         }
@@ -35,16 +35,16 @@ FormOptions = {
             );
         }
     },
-    deleteRecord: function (record_id, url, table) {
+    deleteRecord: function (record_id, url, table, text = "You won't be able to revert this!", title = "Are you sure?", icon = "warning", confirmButtonText = "Yes, delete it!", successMessage = "Your record has been deleted.") {
         let tableName = '#' + table;
         Swal.fire({
-            title: 'Are you sure?',
-            text: "You won't be able to revert this!",
-            icon: 'warning',
+            title: title,
+            text: text,
+            icon: icon,
             showCancelButton: true,
             confirmButtonColor: '#3085d6',
             cancelButtonColor: '#d33',
-            confirmButtonText: 'Yes, delete it!'
+            confirmButtonText: confirmButtonText
         }).then((result) => {
             if (result.value) {
                 $.ajaxSetup({
@@ -64,7 +64,7 @@ FormOptions = {
                             table.ajax.reload();
                             Swal.fire(
                                 'Deleted!',
-                                'Your record has been deleted.',
+                                successMessage,
                                 'success'
                             );
                         } else {
@@ -95,10 +95,8 @@ FormOptions = {
             rules: rules
         });
     },
-    clearTrumbowygInput: function (form_id) {
-        $(form_id).find('.permission').val('');
-        $(form_id).find('.permission').trigger('change');
-        $(form_id + ' .description').trumbowyg('html', "");
-        $(form_id).trigger("reset");
+    clearCampaignForm: function (form_id) {
+        clearAll(form_id);
+        changeCampaignType(form_id,'STAR_POINT','edit');
     }
 };
