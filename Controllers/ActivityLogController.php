@@ -33,7 +33,7 @@ class ActivityLogController extends Controller
     {
         $user = Auth::user();
         $user_id = Auth::user()->id;
-        $is_admin = ($user->hasRole('Super Admin') || $user->hasRole('Admin')) ? true : false;
+        $is_admin = ($user->hasRole('Super Admin')) ? true : false;
         $order_by = $request->order;
         $search = $request->search['value'];
         $start = $request->start;

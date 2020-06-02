@@ -60,10 +60,7 @@ class MenuTableSeeder extends Seeder
         $child4 = $root->children()->firstOrCreate(['title' => 'Activity Logs', 'url' => 'activity-logs.index']);
         $child4->permissions()->saveMany([
              Permission::firstOrCreate(['name' => 'activity-logs index' ,'guard_name' => 'web']),
-             Permission::firstOrCreate(['name' => 'activity-logs create' ,'guard_name' => 'web']),
-             Permission::firstOrCreate(['name' => 'activity-logs show' ,'guard_name' => 'web']),
-             Permission::firstOrCreate(['name' => 'activity-logs edit' ,'guard_name' => 'web']),
-             Permission::firstOrCreate(['name' => 'activity-logs delete','guard_name' => 'web']),
+             Permission::firstOrCreate(['name' => 'activity-logs filter' ,'guard_name' => 'web']),
         ]);
 
 

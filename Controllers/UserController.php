@@ -104,6 +104,7 @@ class UserController extends Controller
         $user->name = $request->name;
         $user->email = $request->email;
         $user->updated_by = $request->updated_by;
+        $user->syncRoles($request->role);
         $user->save();
         return $this->sendResponse($user, 'User Updated Successfully');
 
@@ -138,7 +139,7 @@ class UserController extends Controller
 
         if (is_null($search) || empty($search)) {
             $users = $users->get();
-            $user_count = Role::all()->count();
+            $user_count = User::all()->count();
         } else {
             $users = $users->searchData($search)->get();
             $user_count = $users->count();
@@ -149,16 +150,18 @@ class UserController extends Controller
         $edit_btn = null;
         $delete_btn = null;
         $reset_btn = null;
-        $attempts_btn = null;
 
-        $can_reset = ($user->hasPermissionTo('reset password') || $user->hasAnyRole(['Super Admin', 'Admin'])) ? 1 : 0;
-        $can_edit = ($user->hasPermissionTo('users edit') || $user->hasAnyRole(['Super Admin', 'Admin'])) ? 1 : 0;
-        $can_delete = ($user->hasPermissionTo('users delete') || $user->hasAnyRole(['Super Admin', 'Admin'])) ? 1 : 0;
-        $reset_attempts = ($user->hasPermissionTo('reset attempts') || $user->hasAnyRole(['Super Admin', 'Admin'])) ? 1 : 0;
+
+        $can_reset = ($user->hasPermissionTo('reset password') || $user->hasAnyRole(['Super Admin'])) ? 1 : 0;
+        $can_edit = ($user->hasPermissionTo('users edit') || $user->hasAnyRole(['Super Admin'])) ? 1 : 0;
+        $can_delete = ($user->hasPermissionTo('users delete') || $user->hasAnyRole(['Super Admin'])) ? 1 : 0;
+        $reset_attempts = ($user->hasPermissionTo('reset attempts') || $user->hasAnyRole(['Super Admin'])) ? 1 : 0;
 
         foreach ($users as $key => $user) {
+            $attempts_btn = null;
+
             if ($reset_attempts) {
-                if ($user->login_attempts>3){
+                if ($user->login_attempts>=3){
                     $attempts_btn = "<i title='Unlock user' class='icon-md icon-lock-open mr-3' onclick=\"resetAttempt(this)\" data-id='{$user->id}'></i>";
                 }
             }

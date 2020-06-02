@@ -117,8 +117,8 @@ class PermissionController extends Controller
         $i = 0;
         $edit_btn = null;
         $delete_btn = null;
-        $can_edit = ($user->hasPermissionTo('permissions edit') || $user->hasAnyRole(['Super Admin','Admin'])) ? 1 : 0;
-        $can_delete = ($user->hasPermissionTo('permissions delete') || $user->hasAnyRole(['Super Admin','Admin'])) ? 1 : 0;
+        $can_edit = ($user->hasPermissionTo('permissions edit') || $user->hasAnyRole(['Super Admin'])) ? 1 : 0;
+        $can_delete = ($user->hasPermissionTo('permissions delete') || $user->hasAnyRole(['Super Admin'])) ? 1 : 0;
 
         foreach ($permissions as $key => $permission) {
             if ($can_edit) {
