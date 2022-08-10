@@ -1,39 +1,40 @@
 {
     "name": "mylinex/administration",
-    "description": "User permissions roles package",
     "type": "library",
-    "require": {
-        "spatie/laravel-permission": "^3.2",
-        "laravelcollective/html": "^6.0",
-        "spatie/laravel-activitylog": "^3.9",
-        "baum/baum": "v2.x-dev",
-        "laravel/ui": "^2.0"
-    },
     "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "Administration\\": "src/",
+            "Administration\\Database\\Seeds\\": "src/database/seeds/"
+        }
+    },
     "authors": [
         {
-            "name": "Chinthaka Dilan F",
-            "email": "ccdilan@gmail.com"
-        },
-        {
-            "name": "Lahiru Madusanka",
-            "email": "lahiru@mylinex.com"
+            "name": "Dilshan Chathuranga",
+            "email": "dilshan@mylinex.com"
         }
     ],
+    "scripts": {
+        "post-autoload-dump": [
+            "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",
+            "@php artisan package:discover --ansi",
+            "@php artisan vendor:publish --provider=Administration\\AdministrationServiceProvider --force"
+        ]
+    },
     "minimum-stability": "dev",
-    "version": "3.14",
+    "require": {
+        "spatie/laravel-permission": "5.x-dev",
+        "laravelcollective/html": "^6.3",
+        "spatie/laravel-activitylog": "^4.5",
+        "baum/baum": "v2.x-dev",
+        "laravel/ui": "^4.5"
+    },
     "extra": {
         "laravel": {
             "providers": [
                 "Administration\\AdministrationServiceProvider",
                 "Administration\\AdministrationEventServiceProvider"
             ]
-        }
-    },
-    "autoload": {
-        "psr-4": {
-            "Administration\\": "/",
-            "Administration\\Database\\seeds\\": "database/seeds/"
         }
     }
 }
