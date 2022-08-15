@@ -46,7 +46,7 @@ class AdministrationServiceProvider extends ServiceProvider
             __DIR__ . '/Assets/images' => public_path('images'),
             __DIR__ . '/Assets/fonts' => public_path('fonts'),
             __DIR__ . '/Assets/plugins' => public_path('plugins'),
-            __DIR__ . '/Database/seeds' => database_path('seeders'),
+            __DIR__ . '/Database/seeds' => database_path('seeds'),
         ], 'public');
 
         View::composer('*', function ($view) {
@@ -163,7 +163,7 @@ class AdministrationServiceProvider extends ServiceProvider
 
                 }
             }
-            View::share('menux', $html);
+            View::share('menu', $html);
         });
     }
 }

@@ -1,7 +1,5 @@
 <?php
 
-namespace Database\Seeders;
-
 use Administration\Models\Menu;
 use Administration\Models\Permission;
 use Administration\Models\User;

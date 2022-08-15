@@ -20,11 +20,11 @@
     <link href="{{asset('plugins/jquery-toast-plugin/jquery.toast.min.css')}}" rel="stylesheet" type="text/css">
     <link href="{{asset('plugins/sweetalert2/sweetalert2.css')}}" rel="stylesheet" type="text/css">
 
-    <!-- @stack('styles') -->
+    <!-- <!-- @stack('styles') -->
 
     <!-- Custom CSS -->
     <link href="{{asset('css/style.css')}}" rel="stylesheet" type="text/css">
-    <!-- <link href="https://cdn.datatables.net/1.12.1/css/jquery.dataTables.min.css" rel="stylesheet" type="text/css"> -->
+    <link href="https://cdn.datatables.net/1.12.1/css/jquery.dataTables.min.css" rel="stylesheet" type="text/css">
     
     <!-- <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js" type="text/javascript"></script> -->
 
@@ -45,7 +45,7 @@
             <div class="collapse navbar-collapse" id="navbarCollapseAlt">
                 <ul class="navbar-nav">
                     <li class="nav-item dropdown show-on-hover active">
-                        <a class="nav-link " href="/home" aria-haspopup="true" aria-expanded="false">
+                        <a class="nav-link " href="/homehome" aria-haspopup="true" aria-expanded="false">
                             Dashboard
                         </a>
                     </li>
@@ -79,10 +79,10 @@
                            href="{{route('users.profile',\Illuminate\Support\Facades\Auth::id())}}"><i
                                 class="dropdown-icon zmdi zmdi-account"></i><span>Profile</span></a>
                         <div class="dropdown-divider"></div>
-                        <a class="dropdown-item" href="{{ route('log-out') }}"
+                        <a class="dropdown-item" href="{{ route('log--out') }}"
                            onclick="event.preventDefault(); document.getElementById('frm-logout').submit();"><i
                                     class="dropdown-icon zmdi zmdi-power"></i><span>Log out</span></a>
-                        <form id="frm-logout" action="{{ route('log-out') }}" method="POST" style="display: none;">
+                        <form id="frm-logout" action="{{ route('log--out') }}" method="POST" style="display: none;">
                             {{ csrf_field() }}
                         </form>
                     </div>
@@ -123,6 +123,7 @@
 </div>
 
 <script src="{{asset('js/app.js')}}"></script>
+<script src="{{asset('js/jquery.dataTables.min.js')}}"></script>
 <script src="{{asset('js/jquery.dataTables.min.js')}}"></script>
 <script src="{{asset('plugins/popper/popper.js')}}"></script>
 

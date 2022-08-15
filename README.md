@@ -20,15 +20,38 @@ Please add this route to your web.php
         return view('Administration::auth.login');
     });
 
-Please added to your composer.json
+Add this line to DatabaseSeeder.php in /database/seeds/
 
-    "mylinex/administration": '@dev',
+    $this->call([
+        PermissionsTableSeeder::class,
+        MenuTableSeeder::class,
+        RolesTableSeeder::class,
+        UsersTableSeeder::class
+    ]);
 
-    "scripts": {
-        "post-autoload-dump": [
-            "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",
-            "@php artisan package:discover --ansi",
-            "@php artisan vendor:publish --provider=Administration\\AdministrationServiceProvider --force"
-        ]
-    },
-----------
+** If your application is with laravel 9 and PHP 8
+
+Change app/Http/Middleware/TrustProxies.php
+
+    protected $headers = Request::HEADER_X_FORWARDED_ALL;
+
+    //to 
+
+    protected $headers = 
+        Request::HEADER_X_FORWARDED_FOR |
+        Request::HEADER_X_FORWARDED_HOST |
+        Request::HEADER_X_FORWARDED_PORT |
+        Request::HEADER_X_FORWARDED_PROTO |
+        Request::HEADER_X_FORWARDED_AWS_ELB;
+
+Migrate database & seed
+
+    php artisan migrate
+
+    php artisan db:seed
+
+Run development server
+
+    php artisan serve
+
+

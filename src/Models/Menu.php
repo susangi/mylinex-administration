@@ -7,10 +7,11 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\Auth;
 use Spatie\Activitylog\Traits\LogsActivity;
+use Administration\Traits\ActivityLogOptionsTrait;
 
 class Menu extends Model
 {
-    use WorksAsNestedSet,SoftDeletes, LogsActivity;
+    use WorksAsNestedSet,SoftDeletes, LogsActivity, ActivityLogOptionsTrait;
     protected $table = 'menu';
     protected $fillable = ['title', 'url', 'description', 'permissions', 'parent_id', 'left', 'right', 'depth'];
     protected $parentColumnName = 'parent_id';
