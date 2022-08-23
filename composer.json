@@ -26,7 +26,7 @@
         "spatie/laravel-permission": "5.x-dev",
         "laravelcollective/html": "^6.3",
         "spatie/laravel-activitylog": "^4.5",
-        "baum/baum": "v2.x-dev",
+        "baum/baum": "v3.x-dev",
         "laravel/ui": "^4.5"
     },
     "extra": {
