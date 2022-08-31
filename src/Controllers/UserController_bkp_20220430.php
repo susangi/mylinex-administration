@@ -178,7 +178,7 @@ class UserController extends Controller
 
         if (is_null($search) || empty($search)) {
             $users = $users->get();
-            $user_count = User::all()->count();
+            $user_count = Role::count();
         } else {
             $users = $users->searchData($search)->get();
             $user_count = $users->count();
@@ -197,11 +197,9 @@ class UserController extends Controller
             $attempts_btn = null;
 
             $menu_title = (!empty($user->landing_page)) ?Menu::where('id','=',$user->landing_page)->first()->title:'-';
-            
+
             if ($reset_attempts) {
-                $last_login = new Carbon(($user->last_login) ? $user->last_login : $user->created_at);
-                $disabledUser = Carbon::now()->diffInDays($last_login) >= config('auth.user_expires_days');
-                if ($user->login_attempts>=3 || $disabledUser){
+                if ($user->login_attempts>=3){
                     $attempts_btn = "<i title='Unlock user' class='icon-md icon-lock-open mr-3' onclick=\"resetAttempt(this)\" data-id='{$user->id}'></i>";
                 }
             }
@@ -255,7 +253,6 @@ class UserController extends Controller
         $newPassword = $request->password;
         $user->password = Hash::make($newPassword);
         $user->password_changed_at = Carbon::now()->toDateTimeString();
-        $user->last_login = Carbon::now();
         $user->save();
 
         $pc = new PasswordPolicyService($user);
@@ -267,7 +264,6 @@ class UserController extends Controller
     public function unlock(Request $request, User $user)
     {
         $user->login_attempts = 0;
-        $user->last_login = Carbon::now();
         $user->save();
         return $this->sendResponse($user, 'User Unlocked Successfully');
 

@@ -9,24 +9,25 @@ use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\View;
+use Laravel\Passport\HasApiTokens;
+use Spatie\Activitylog\Traits\LogsActivity;
 use Spatie\Permission\Traits\HasRoles;
 use Administration\Traits\ActivityLogOptionsTrait;
-use Spatie\Activitylog\Traits\LogsActivity;
 
 class User extends Authenticatable
 {
-    use Notifiable, SoftDeletes, HasRoles, ActivityLogOptionsTrait, LogsActivity;
+    use Notifiable, SoftDeletes, LogsActivity, HasRoles, HasApiTokens, ActivityLogOptionsTrait;
     protected $guard_name = 'web';
     protected static $logName = 'users';
     protected static $logAttributes = ['name', 'email'];
-    
+
     /**
      * The attributes that are mass assignable.
      *
      * @var array
      */
     protected $fillable = [
-        'name', 'email', 'password', 'created_by', 'updated_by',
+        'name', 'email', 'last_login', 'password_changed_at', 'login_attempts', 'is_api', 'landing_page', 'password', 'created_by', 'updated_by',
     ];
 
     /**
@@ -61,6 +62,37 @@ class User extends Authenticatable
             ->orWhere('name', 'like', "%" . $term . "%")
             ->orWhere('email', 'like', "%" . $term . "%");
     }
+
+//    public function hasAnyAccess($permission = [], $isId = false)
+//    {
+////        if (!Auth::user()) {
+////            abort(403);
+////        }
+//
+//        $user = User::with('roles')->find($this->id);
+//        $roles = $user->roles;
+//
+//        $is_super_admin = $user->hasRole('Super Admin') ? true : false;
+//        $is_admin = $user->hasRole('Admin') ? true : false;
+//
+//        if (($is_super_admin || $is_admin)) {
+//            return true;
+//        }
+//
+//        $permissions = is_array($permission) ? $permission : $permission->toArray();
+//
+//
+//        if ($isId) {
+//            $rolePermissions = Role::whereName($roles[0]->name)->first()->permissions->pluck('id')->toArray();
+//        } else {
+//            $rolePermissions = Role::whereName($roles[0]->name)->first()->permissions->pluck('name')->toArray();
+//        }
+////dd($permission->toArray());
+////dd(array_intersect($permission->toArray(), $rolePermissions));
+////dd($rolePermissions);
+//        $intersects = array_intersect($permissions, $rolePermissions);
+//        return !empty($intersects) ? true : false;
+//    }
 
     public function generateMenu(){
         $user = $this;

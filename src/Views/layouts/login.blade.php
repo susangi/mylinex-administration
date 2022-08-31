@@ -19,13 +19,13 @@
     <!-- Toastr CSS -->
     <link href="{{asset('plugins/jquery-toast-plugin/jquery.toast.min.css')}}" rel="stylesheet" type="text/css">
 
-@include('Administration::layouts.includes.styles.fonts')
+@include('layouts.includes.styles.fonts')
 
 @stack('styles')
 
 <!-- Custom CSS -->
     <link href="{{asset('css/style.css')}}" rel="stylesheet" type="text/css">
-    
+
 
 </head>
 <body>
@@ -70,9 +70,8 @@
 <script src="{{asset('js/app.js')}}"></script>
 <!-- Bootstrap Core JavaScript -->
 <script src="{{asset('plugins/popper/popper.js')}}"></script>
-<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js" type="text/javascript"></script>
 
-@include('Administration::layouts.includes.scripts.fonts')
+@include('layouts.includes.scripts.fonts')
 
 <!-- Slimscroll JavaScript -->
 <script src="{{asset('plugins/jquery-slimscroll/jquery.slimscroll.js')}}"></script>

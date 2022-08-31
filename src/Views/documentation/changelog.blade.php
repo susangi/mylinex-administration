@@ -72,7 +72,9 @@
         <article class="uk-article changelog">
             <h1 class="uk-article-title">Changelog timeline</h1>
             <div class="article-content link-primary">
-                <p>A changelog is a log or record of all notable changes made to a project. The project is often a website or software project, and the changelog usually includes records of changes such as bug fixes, new features, etc.</p>
+                <p>Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem
+                    aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo.
+                </p>
                 <div class="tm-timeline uk-margin-large-top">
                     @foreach($logs as $log)
                     <div class="tm-timeline-entry">

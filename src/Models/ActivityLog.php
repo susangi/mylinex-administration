@@ -5,9 +5,11 @@ namespace Administration\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
 use Spatie\Activitylog\Traits\LogsActivity;
+use Administration\Traits\ActivityLogOptionsTrait;
 
 class ActivityLog extends Model
 {
+    use ActivityLogOptionsTrait, LogsActivity;
 
     protected $table = "activity_log";
 

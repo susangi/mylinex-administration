@@ -1,4 +1,4 @@
-@extends('Administration::layouts.app')
+@extends('layouts.app')
 @section('title','Docs')
 @section('content')
     <div class="hk-pg-header">
@@ -88,13 +88,13 @@
 
 @endsection
 @push('styles')
-    @include('Administration::layouts.includes.styles.form')
+    @include('layouts.includes.styles.form')
     <link href="{{asset('plugins/datatables/jquery.dataTables.css')}}" rel="stylesheet" type="text/css"/>
     <link href="{{asset('plugins/trumbowyg/ui/trumbowyg.min.css')}}" rel="stylesheet" type="text/css"/>
 @endpush
 
 @push('scripts')
-    @include('Administration::layouts.includes.scripts.form')
+    @include('layouts.includes.scripts.form')
     <!-- Data Table JavaScript -->
     <script src="{{asset('js/main.js')}}"></script>
     <script src="{{asset('plugins/datatables/jquery.dataTables.min.js')}}"></script>

@@ -1,4 +1,4 @@
-@extends('Administration::layouts.app')
+@extends('layouts.app')
 @section('title','Profile Settings')
 @section('content')
     <div class="tab-pane fade show active" role="tabpanel">
@@ -110,5 +110,56 @@
 @endpush
 
 @push('scripts')
+    <script>
+        var xds = false;
+        function checkRecentlyUsed(value) {
+            self.xds = xds;
+            $.ajax({
+                url: '/recently_used_pw',
+                type: 'POST',
+                async: false,
+                data: {
+                    _token: "{{ csrf_token() }}",
+                    password: value,
+                },
+                dataType: 'JSON',
+                success: function (data) {
+                    self.xds = data;
+                }
+            });
+            return self.xds;
+        }
 
+        $.validator.addMethod(
+            "checkRecentlyUsed",
+            function (value , element){
+                return checkRecentlyUsed(value);
+            },
+            "Not allowed to add 24 previous passwords as new password."
+        );
+
+        $.validator.addMethod(
+            "regex",
+            function (value, element, regexp) {
+                var re = new RegExp(regexp);
+                return this.optional(element) || re.test(value);
+            },
+            "Password must be of 8-14 characters in length and have one or more special character and one or more number and one or more uppercase character."
+        );
+
+        $("#updatePassword").validate({
+            rules: {
+                password: {
+                    regex: "^(?=.*[0-9])(?=.*[!@#$%^&*])(?=.*[A-Z])(?=.*[a-z])[a-zA-Z0-9!@#$%^&*]{8,14}$",
+                    minlength: 8,
+                    checkRecentlyUsed: true
+                },
+                password_confirmation: {
+                    regex: "^(?=.*[0-9])(?=.*[!@#$%^&*])(?=.*[A-Z])(?=.*[a-z])[a-zA-Z0-9!@#$%^&*]{8,14}$",
+                    equalTo: "#password",
+                    minlength: 8
+                }
+            }
+        });
+    </script>
 @endpush

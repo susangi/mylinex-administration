@@ -3,13 +3,13 @@
 namespace Administration\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Administration\Traits\ActivityLogOptionsTrait;
-use Spatie\Permission\Traits\HasPermissions;
 use Spatie\Activitylog\Traits\LogsActivity;
+use Spatie\Permission\Traits\HasPermissions;
+use Administration\Traits\ActivityLogOptionsTrait;
 
 class Role extends Model
 {
-    use ActivityLogOptionsTrait,HasPermissions, LogsActivity;
+    use LogsActivity,HasPermissions, ActivityLogOptionsTrait;
     protected static $logName = 'permissions';
     protected static $logAttributes = ['*'];
 

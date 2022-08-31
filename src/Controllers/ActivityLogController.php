@@ -14,6 +14,8 @@ class ActivityLogController extends Controller
 {
     public function index()
     {
+//        $causers = ActivityLog::CausedByList()->get()->pluck('causer.name', 'causer.id');
+
         $user = Auth::user();
         $user_id = Auth::user()->id;
         $is_super_admin = $user->hasRole('Super Admin') ? true : false;
@@ -22,9 +24,8 @@ class ActivityLogController extends Controller
         if (!($is_super_admin || $is_admin)){
             $causers = User::whereId($user_id)->pluck('name', 'id');
         }
-        
-        $performed_on = ActivityLog::PerformedOnList()->pluck('subject_type', 'subject_type');
-        
+
+        $performed_on = ActivityLog::PerformedOnList()->get()->pluck('subject_type', 'subject_type');
         return view('Administration::activity-logs.index', compact('causers', 'performed_on')) ;
     }
 
@@ -85,6 +86,22 @@ class ActivityLogController extends Controller
 
             $causer = ($causer_type == 'User') ? User::whereId($log->causer_id)->withTrashed()->first()->name : $log->causer_id;
             $subject = ($subject_type == 'User') ? User::whereId($log->subject_id)->withTrashed()->first()->name : $log->subject_id;
+
+            if (empty($result_array[0])) {
+//                echo "they are same";
+            } else {
+
+            }
+//
+//            $tmp = collect($result_array);
+//            $properties = $tmp->map(function ($item, $key) {
+//                if (!is_array($item)){
+//                    return " $key=>$item";
+//                } else {
+//                    return " $key=>".implode(",",$item);
+//                }
+//            })->flatten()->implode(",");
+//
 
             $js = json_encode($result_array, JSON_PRETTY_PRINT);
             $jsonView = '<div class=""><textarea class="terminal-container">' . $js . '</textarea></div>';

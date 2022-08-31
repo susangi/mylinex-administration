@@ -49,7 +49,7 @@
                             Dashboard
                         </a>
                     </li>
-                    {!! $menux !!}
+                    {!! $menu !!}
                     <div id="menu"></div>
                 </ul>
             </div>
@@ -79,10 +79,10 @@
                            href="{{route('users.profile',\Illuminate\Support\Facades\Auth::id())}}"><i
                                 class="dropdown-icon zmdi zmdi-account"></i><span>Profile</span></a>
                         <div class="dropdown-divider"></div>
-                        <a class="dropdown-item" href="{{ route('log--out') }}"
+                        <a class="dropdown-item" href="{{ route('logout') }}"
                            onclick="event.preventDefault(); document.getElementById('frm-logout').submit();"><i
                                     class="dropdown-icon zmdi zmdi-power"></i><span>Log out</span></a>
-                        <form id="frm-logout" action="{{ route('log--out') }}" method="POST" style="display: none;">
+                        <form id="frm-logout" action="{{ route('logout') }}" method="POST" style="display: none;">
                             {{ csrf_field() }}
                         </form>
                     </div>
@@ -123,7 +123,6 @@
 </div>
 
 <script src="{{asset('js/app.js')}}"></script>
-<script src="{{asset('js/jquery.dataTables.min.js')}}"></script>
 <script src="{{asset('js/jquery.dataTables.min.js')}}"></script>
 <script src="{{asset('plugins/popper/popper.js')}}"></script>
 

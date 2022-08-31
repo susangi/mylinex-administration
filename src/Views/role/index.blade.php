@@ -1,4 +1,4 @@
-@extends('Administration::layouts.app')
+@extends('layouts.app')
 @section('title','Roles')
 @section('content')
     <div class="hk-pg-header">
@@ -87,19 +87,16 @@
 
 @endsection
 @push('styles')
-
     @include('Administration::layouts.includes.styles.form')
     <link href="{{asset('plugins/datatables/jquery.dataTables.css')}}" rel="stylesheet" type="text/css"/>
-    
 @endpush
 
 @push('scripts')
-
     @include('Administration::layouts.includes.scripts.form')
     <!-- Data Table JavaScript -->
     <script src="{{asset('plugins/datatables/jquery.dataTables.min.js')}}"></script>
     <script src="{{asset('js/dataTables-data.js')}}"></script>
-    <script src="{{asset('js/dataTable.js')}}" rel="stylesheet" type="text/css"/></script>
+
     <script>
         initCheckBox();
 
@@ -253,7 +250,7 @@
                 }
             })
         }
-    </script>
+    </script>)
     <script>
         $(".input_tags").select2({
             tags: false,

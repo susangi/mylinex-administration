@@ -3,7 +3,6 @@
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
-use Spatie\Permission\PermissionRegistrar;
 
 class CreatePermissionTables extends Migration
 {
@@ -21,14 +20,14 @@ class CreatePermissionTables extends Migration
             $table->bigIncrements('id');
             $table->integer('menu_id')->nullable();
             $table->string('name');
-            $table->string('guard_name')->nullable();
+            $table->string('guard_name');
             $table->timestamps();
         });
 
         Schema::create($tableNames['roles'], function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->string('name');
-            $table->string('guard_name')->nullable();
+            $table->string('guard_name');
             $table->timestamps();
         });
 

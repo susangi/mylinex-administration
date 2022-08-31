@@ -1,4 +1,4 @@
-@extends('Administration::layouts.app')
+@extends('layouts.app')
 @section('title', 'Dashboard')
 @section('content')
     <!-- Container -->
@@ -247,14 +247,14 @@
     <!-- /Container -->
 @endsection
 @push('styles')
-    @include('Administration::layouts.includes.styles.fonts')
-    @include('Administration::layouts.includes.styles.charts')
-    @include('Administration::layouts.includes.styles.interface')
+    @include('layouts.includes.styles.fonts')
+    @include('layouts.includes.styles.charts')
+    @include('layouts.includes.styles.interface')
 @endpush
 @push('scripts')
-    @include('Administration::layouts.includes.scripts.fonts')
-    @include('Administration::layouts.includes.scripts.charts')
-    @include('Administration::layouts.includes.scripts.interface')
+    @include('layouts.includes.scripts.fonts')
+    @include('layouts.includes.scripts.charts')
+    @include('layouts.includes.scripts.interface')
     <script src="{{asset('js/dashboard2-data.js')}}"></script>
     <script>
         /*Counter Animation*/

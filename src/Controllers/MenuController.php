@@ -4,6 +4,7 @@ namespace Administration\Controllers;
 
 use Administration\Models\Menu;
 use Administration\Models\Permission;
+use Administration\Models\Role;
 use Administration\Models\User;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
@@ -20,9 +21,18 @@ class MenuController extends Controller
      */
     public function index()
     {
-
         $roots = Menu::roots()->get()->pluck('title', 'id');
         return view('Administration::menu.index', compact('roots'));
+    }
+
+    /**
+     * Show the form for creating a new resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function create()
+    {
+        //
     }
 
     /**
@@ -33,6 +43,9 @@ class MenuController extends Controller
      */
     public function store(Request $request)
     {
+        //system get error because route not implement
+        return $this->sendError('Route Not Found');
+
         $isParent = (!empty($request->isParent)) ? $request->isParent : false;
         if ($isParent) {
             $root = Menu::firstOrCreate(['title' => $request->title]);
@@ -55,20 +68,42 @@ class MenuController extends Controller
                 if (!empty($permissions) && sizeof($permissions) > 0) {
                     foreach ($permissions as $permission) {
                         $permission = strtolower($child->title) . ' ' . strtolower($permission);
-                        $child->permissions()->save(new Permission(['name' => $permission, 'guard' => 'web']));
+                        $child->permissions()->save(new Permission(['name' => $permission, 'guard_name' => 'web']));
                     }
                 }
 
                 if (!empty($tags) && sizeof($tags) > 0) {
                     foreach ($tags as $tag) {
                         $permission =  strtolower($tag);
-                        $child->permissions()->save(new Permission(['name' => $permission, 'guard' => 'web']));
+                        $child->permissions()->save(new Permission(['name' => $permission, 'guard_name' => 'web']));
                     }
                 }
 
             });
             return $this->sendResponse([], 'Menu Created Successfully');
         }
+    }
+
+    /**
+     * Display the specified resource.
+     *
+     * @param \App\Menu $menu
+     * @return \Illuminate\Http\Response
+     */
+    public function show(Menu $menu)
+    {
+        //
+    }
+
+    /**
+     * Show the form for editing the specified resource.
+     *
+     * @param \App\Menu $menu
+     * @return \Illuminate\Http\Response
+     */
+    public function edit(Menu $menu)
+    {
+        //
     }
 
     /**
@@ -110,16 +145,16 @@ class MenuController extends Controller
                 if (!empty($permissions) && sizeof($permissions) > 0) {
                     foreach ($permissions as $permission) {
                         $permission = strtolower($menu->title) . ' ' . strtolower($permission);
-                        $menu->permissions()->save(new Permission(['name' => $permission, 'guard' => 'web']));
+                        $menu->permissions()->save(new Permission(['name' => $permission, 'guard_name' => 'web']));
                     }
                 }
 
-
+                $tags = explode(',', $tags[0]);
                 if (!empty($tags) && sizeof($tags) > 0) {
                     foreach ($tags as $tag) {
                         if ($tag != null) {
                             $permission = strtolower($tag);
-                            $menu->permissions()->save(new Permission(['name' => $permission, 'guard' => 'web']));
+                            $menu->permissions()->save(new Permission(['name' => $permission, 'guard_name' => 'web']));
                         }
                     }
                 }
@@ -200,5 +235,6 @@ class MenuController extends Controller
         ];
 
         return json_encode($json_data);
+
     }
 }

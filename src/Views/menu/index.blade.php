@@ -1,12 +1,14 @@
-@extends('Administration::layouts.app')
+@extends('layouts.app')
 @section('title','Menu')
 @section('content')
     <div class="hk-pg-header">
         <h4 class="hk-sec-title">All Menu</h4>
+        @if(Auth::user()->hasAnyRole(['Super Admin']) )
         <button type="button" class="btn btn-primary bg-primary-blue" data-toggle="modal"
                 data-target="#menuCreateModal">
             New Menu
         </button>
+        @endif
     </div>
     <div class="row">
         <div class="col-xl-12">
@@ -91,8 +93,7 @@
 
 @endsection
 @push('styles')
-
-    @include('Administration::layouts.includes.styles.form')
+    @include('layouts.includes.styles.form')
     <link href="{{asset('plugins/datatables/jquery.dataTables.css')}}" rel="stylesheet" type="text/css"/>
     <style>
         .bootstrap-tagsinput .tag{
@@ -105,10 +106,9 @@
     </style>
 @endpush
 @push('scripts')
-    @include('Administration::layouts.includes.scripts.form')
+    @include('layouts.includes.scripts.form')
     <script src="{{asset('plugins/datatables/jquery.dataTables.min.js')}}"></script>
-    <script src="{{asset('js/FormOptions.js')}}"></script>
-    <script src="{{asset('js/dataTable.js')}}"></script>
+
     <script>
         DataTableOption.initDataTable('menuTable', 'menu/table/data');
         FormOptions.initValidation('menuCreateForm');

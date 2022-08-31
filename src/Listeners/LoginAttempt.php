@@ -14,6 +14,16 @@ use Illuminate\Support\Facades\Request;
 class LoginAttempt
 {
     /**
+     * Create the event listener.
+     *
+     * @return void
+     */
+    public function __construct()
+    {
+
+    }
+
+    /**
      * Handle the event.
      *
      * @param Login $event
@@ -25,4 +35,6 @@ class LoginAttempt
         $user->last_login = Carbon::now();
         $user->save();
     }
+
+
 }

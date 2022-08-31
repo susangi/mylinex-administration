@@ -8,6 +8,11 @@
 <body class="">
 <center>
     <!-- BEGIN TEMPLATE // -->
+    <!--[if gte mso 9]>
+    <table align="center" border="0" cellspacing="0" cellpadding="0" width="600" style="width:600px;">
+        <tr>
+            <td align="center" valign="top" width="600" style="width:600px;">
+    <![endif]-->
     <table class="templateContainer" style="border-collapse: collapse;mso-table-lspace: 0pt;mso-table-rspace: 0pt;-ms-text-size-adjust: 100%;-webkit-text-size-adjust: 100%;border: 0;max-width: 600px !important;" width="100%" cellspacing="0"
            cellpadding="0" border="0">
         <tbody>

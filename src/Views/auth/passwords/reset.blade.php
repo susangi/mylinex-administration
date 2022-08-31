@@ -72,7 +72,7 @@
         <div class="col-xl-7 pa-0">
             <div class="auth-form-wrap py-xl-0 py-50">
                 <div class="auth-form w-xxl-55 w-xl-75 w-sm-90 w-xs-100">
-                    <form method="POST" action="{{ route('password.update') }}">
+                    <form method="POST" action="{{ route('password.update') }}" id="reset_form">
                         @csrf
                         <input type="hidden" name="token" value="{{ $token }}">
                         <h1 class="display-5 mb-10">Reset Your Password </h1>

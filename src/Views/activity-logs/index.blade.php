@@ -1,4 +1,4 @@
-@extends('Administration::layouts.app')
+@extends('layouts.app')
 @section('title','Activity Log')
 @section('content')
     <div class="hk-pg-header">
@@ -62,7 +62,7 @@
     </div>
 @endsection
 @push('styles')
-    @include('Administration::layouts.includes.styles.form')
+    @include('layouts.includes.styles.form')
     <link href="{{asset('plugins/datatables/jquery.dataTables.css')}}" rel="stylesheet" type="text/css"/>
     <link href="{{asset('plugins/daterangepicker/daterangepicker.css')}}" rel="stylesheet" type="text/css"/>
     <style>
@@ -77,7 +77,7 @@
 @endpush
 
 @push('scripts')
-    @include('Administration::layouts.includes.scripts.form')
+    @include('layouts.includes.scripts.form')
     <!-- Data Table JavaScript -->
     <script src="{{asset('plugins/datatables/jquery.dataTables.min.js')}}"></script>
     <script src="{{asset('js/dataTables-data.js')}}"></script>

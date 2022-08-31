@@ -56,15 +56,17 @@ class AdministrationServiceProvider extends ServiceProvider
                 $user = User::find($user_id);
                 $menu_ids = [];
                 $current_route = Request::route()->getName();
-                
+
                 if ($user->hasRole(['Super Admin'])) {
                     $menu_ids = Menu::with('parentMenu')->get()->pluck('id');
                 } else {
                     $menu_id = $user->getAllPermissions()->pluck('menu_id');
                     $menu_ids = $menu_id->unique();
                 }
-                
+
+
                 $menu = Menu::roots()->get();
+
 
                 $html = null;
 
@@ -167,4 +169,3 @@ class AdministrationServiceProvider extends ServiceProvider
         });
     }
 }
-

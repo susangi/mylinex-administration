@@ -1,4 +1,4 @@
-@extends('Administration::layouts.app')
+@extends('layouts.app')
 @section('title','Users')
 @section('content')
     <div class="hk-pg-header">
@@ -17,9 +17,12 @@
                             <table id="userTable" class="table table-hover w-100 display">
                                 <thead>
                                 <tr>
+                                    <th>#</th>
                                     <th>User Name</th>
                                     <th>Email</th>
                                     <th>Role</th>
+                                    <th>Landing Page</th>
+                                    <th>API User</th>
                                     <th>Action</th>
                                 </tr>
                                 </thead>
@@ -100,6 +103,7 @@
                 <div class="modal-body mt-3 mb-3">
                     {!! Form::open(['method' => 'put', 'id' => 'userResetForm','class'=>'needs-validation','novalidate']) !!}
                     @include('Administration::users.form',['reset'=>true])
+                    <input type="hidden" name="user_id" id="user_id">
                     <div class="float-right">
                         <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Close</button>
                         <button
@@ -119,35 +123,115 @@
 @endpush
 
 @push('scripts')
-
     @include('Administration::layouts.includes.scripts.form')
     <!-- Data Table JavaScript -->
     <script src="{{asset('plugins/datatables/jquery.dataTables.min.js')}}"></script>
-    <script src="{{asset('js/dataTables-data.js')}}"></script>
-    <!-- <script src="https://cdn.datatables.net/1.12.1/js/jquery.dataTables.min.js"></script> -->
     <script src="{{asset('js/dataTable.js')}}"></script>
+    <script src="{{asset('js/dataTables-data.js')}}"></script>
 
     <script>
         DataTableOption.initDataTable('userTable', 'users/table/data');
-        FormOptions.initValidation('userCreateForm');
+        // FormOptions.initValidation('userCreateForm');
         FormOptions.initValidation('userEditForm');
+
+        var xds = false;
+
+        function checkRecentlyUsed(value) {
+            self.xds = xds;
+            $.ajax({
+                url: '/recently_used_pw',
+                type: 'POST',
+                async: false,
+                data: {
+                    _token: "{{ csrf_token() }}",
+                    password: value,
+                    user_id: $("#userResetForm").find('#user_id').val(),
+                },
+                dataType: 'JSON',
+                success: function (data) {
+                    self.xds = data;
+                }
+            });
+            return self.xds;
+        }
+
+        $.validator.addMethod(
+            "checkRecentlyUsed",
+            function (value , element){
+                return checkRecentlyUsed(value);
+            },
+            "Not allowed to add 24 previous passwords as new password."
+        );
+
+        $.validator.addMethod(
+            "regex",
+            function (value, element, regexp) {
+                var re = new RegExp(regexp);
+                return this.optional(element) || re.test(value);
+            },
+            "Password must be of 8-14 characters in length and have one or more special character and one or more number and one or more uppercase character."
+        );
+
+        $("#userCreateForm").validate({
+            rules: {
+                password: {
+                    regex: "^(?=.*[0-9])(?=.*[!@#$%^&*])(?=.*[A-Z])(?=.*[a-z])[a-zA-Z0-9!@#$%^&*]{8,14}$",
+                    minlength: 8,
+                },
+                txtConfirmPassword: {
+                    regex: "^(?=.*[0-9])(?=.*[!@#$%^&*])(?=.*[A-Z])(?=.*[a-z])[a-zA-Z0-9!@#$%^&*]{8,14}$",
+                    equalTo: "#password",
+                    minlength: 8
+                }
+            }
+        });
+
+        $("#userResetForm").validate({
+            rules: {
+                password: {
+                    regex: "^(?=.*[0-9])(?=.*[!@#$%^&*])(?=.*[A-Z])(?=.*[a-z])[a-zA-Z0-9!@#$%^&*]{8,14}$",
+                    minlength: 8,
+                    checkRecentlyUsed: true
+                },
+                txtConfirmPassword: {
+                    regex: "^(?=.*[0-9])(?=.*[!@#$%^&*])(?=.*[A-Z])(?=.*[a-z])[a-zA-Z0-9!@#$%^&*]{8,14}$",
+                    equalTo: "#userResetForm #password",
+                    minlength: 8
+                }
+            }
+        });
+
+        $(".landing_page").select2();
 
         function edit(role) {
             let id = role.dataset.id;
             let name = role.dataset.name;
             let email = role.dataset.email;
             let roles = role.dataset.roles;
+            let landing_page = role.dataset.landing_page;
+            let is_api = (role.dataset.is_api==1)?true:false;
             $("#userEditForm").find('.name').val(name);
             $("#userEditForm").find('.email').val(email);
 
+            $("#userEditForm").find('.is_api').prop( "checked", is_api );
 
-            $("#userEditForm").find('.role').val(roles);
+            let roleName = roles.replace('["', '');
+            roleName = roleName.replace('"]', '');
+
+            $("#userEditForm").find('.role').val(roleName);
+
+            $("#userEditForm").find('.landing_page').val(landing_page);
+            $("#userEditForm").find('.landing_page').trigger('change')
+
+
             $("#userEditForm").attr('action', '/users/' + id);
             ModalOptions.toggleModal('userEditModal');
         }
 
         function reset(role) {
             let id = role.dataset.id;
+
+            $("#userResetForm").find('#user_id').val(id);
             $("#userResetForm").attr('action', '/users/' + id + '/reset');
             ModalOptions.toggleModal('userResetModal');
         }
@@ -163,26 +247,46 @@
                 cancelButtonColor: '#d33',
                 confirmButtonText: 'Yes, unlocked it!'
             }).then((result) => {
-                $.ajax({
-                    type: "get",
-                    url: '/users/unlock/' + id,
-                    success: function (response) {
-                        if (response.success) {
-                            Swal.fire(
-                                'Unlocked!',
-                                'Your file has been deleted.',
-                                'success'
-                            )
-                        } else {
+                if (result.value) {
+                    $.ajax({
+                        type: "get",
+                        url: '/users/unlock/' + id,
+                        success: function (response) {
+                            if (response.success) {
+                                $('#userTable').DataTable().ajax.reload();
+                                Swal.fire(
+                                    'Unlocked!',
+                                    'Your file has been deleted.',
+                                    'success'
+                                )
+                            } else {
+                                Swal.fire("Error!", "Something went wrong", "error");
+                            }
+                        },
+                        error: function (jqXHR, textStatus, errorThrown) {
                             Swal.fire("Error!", "Something went wrong", "error");
                         }
-                    },
-                    error: function (jqXHR, textStatus, errorThrown) {
-                        Swal.fire("Error!", "Something went wrong", "error");
-                    }
-                });
-
+                    });
+                }
             })
         }
+
+
+        $(".role").change(function (e) {
+            var optionSelected = $("option:selected", this);
+            let role = this.value;
+            $(".landing_page").empty();
+            $.ajax({
+                type: "get",
+                url: '/role/' + role + '/menu',
+                success: function (response) {
+                    $.each(response, function (key, modelName) {
+                        var option = new Option(modelName, modelName);
+                        $(option).html(modelName);
+                        $(".landing_page").append(option);
+                    });
+                }
+            });
+        });
     </script>
 @endpush

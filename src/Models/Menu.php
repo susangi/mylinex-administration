@@ -42,7 +42,7 @@ class Menu extends Model
     {
         return $query
             ->Where('id', 'like', "%" . $term . "%")
-            ->orWhere('title', 'like', "%" . $term . "%");
+            ->orWhere('name', 'like', "%" . $term . "%");
     }
 
     public function scopeDerivedPermissions($query)
