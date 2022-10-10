@@ -8,6 +8,6 @@ trait ActivityLogOptionsTrait
 {
     public function getActivitylogOptions(): LogOptions
     {
-        return LogOptions::defaults();
-    }
+        return LogOptions::defaults()
+        ->logOnly(self::$logAttributes);
 }
