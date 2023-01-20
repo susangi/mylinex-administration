@@ -32,9 +32,9 @@ class UserController extends Controller
             $menu->where('type','=',$type);
         }
 
-        $menu = $menu->where('url','<>',null)->get()->pluck('title','id');
+        $landing_page = $menu->where('url','<>',null)->get()->pluck('title','id');
 
-        return view('Administration::users.index',compact('roles','menu'));
+        return view('Administration::users.index',compact('roles','landing_page'));
     }
 
     /**
