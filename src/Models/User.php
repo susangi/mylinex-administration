@@ -2,12 +2,14 @@
 
 namespace Administration\Models;
 
+use Carbon\Carbon;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\View;
 use Laravel\Passport\HasApiTokens;
 use Spatie\Activitylog\Traits\LogsActivity;
@@ -17,6 +19,7 @@ use Administration\Traits\ActivityLogOptionsTrait;
 class User extends Authenticatable
 {
     use Notifiable, SoftDeletes, LogsActivity, HasRoles, HasApiTokens, ActivityLogOptionsTrait;
+
     protected $guard_name = 'web';
     protected static $logName = 'users';
     protected static $logAttributes = ['name', 'email'];
@@ -94,13 +97,38 @@ class User extends Authenticatable
 //        return !empty($intersects) ? true : false;
 //    }
 
-    public function generateMenu(){
+    public function generateMenu()
+    {
         $user = $this;
         $roots = Menu::roots()->get();
-        File::put(resource_path() . '/views/user_menu/' . $user->id . '.blade.php', View::make('Administration::menu.menu', compact('user','roots')));
+        File::put(resource_path() . '/views/user_menu/' . $user->id . '.blade.php', View::make('Administration::menu.menu', compact('user', 'roots')));
     }
 
-    public function scopeIsAdmin($query){
-        return $query->hasRole(['Super Admin', 'Admin'])?1:0;
+    public function scopeIsAdmin($query)
+    {
+        return $query->hasRole(['Super Admin', 'Admin']) ? 1 : 0;
+    }
+
+    public static function unlockUserAccount($user)
+    {
+        $user->login_attempts = 0;
+        $user->last_login = Carbon::now();
+        $user->save();
+    }
+
+    public static function createUser($request, $is_api)
+    {
+        return User::create
+        (
+            [
+                'name' => $request['name'],
+                'email' => $request['email'],
+                'landing_page' => $request['landing_page'],
+                'password' => Hash::make($request['password']),
+                'created_by' => Auth::user(),
+                'is_api' => $is_api
+            ]
+        );
+
     }
 }
