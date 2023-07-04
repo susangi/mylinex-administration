@@ -5,13 +5,20 @@ namespace Administration\Controllers;
 
 use Administration\Models\Permission;
 use Administration\Models\Role;
+use Administration\Repositories\RoleRepository;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\View;
+use Mockery\Exception;
 
 class RoleController extends Controller
 {
+
+    public function __construct(private RoleRepository $repository)
+    {
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -41,13 +48,17 @@ class RoleController extends Controller
      */
     public function store(Request $request)
     {
-        $name = $request->name;
-        $permissions = $request->permissions;
-        $role = Role::firstOrCreate(['name' => $name, 'guard_name' => 'web']);
-        $role = \Spatie\Permission\Models\Role::find($role->id);
-        $role->givePermissionTo($permissions);
-        $msg = ($role->wasRecentlyCreated) ? 'Role Created Successfully' : 'Role Already Exists';
-        return $this->sendResponse($role, $msg);
+        try {
+            $role = $this->repository->store($request->validate());
+
+            return $this->sendResponse
+            (
+                $role,
+                ($role->wasRecentlyCreated) ? 'Role created successfully' : 'Role already exists'
+            );
+        } catch (Exception $exception) {
+            return $this->sendError(config('exception-message.system-error'));
+        }
     }
 
     /**
@@ -81,16 +92,14 @@ class RoleController extends Controller
      */
     public function update(Request $request, Role $role)
     {
-        $role->name = $request->name;
-        $permissions = $request->permissions;
-        $role->save();
 
-        $role = \Spatie\Permission\Models\Role::find($role->id);
-        $currentPermissions= $role->getAllPermissions();
-        $role->revokePermissionTo($currentPermissions);
-        $role->givePermissionTo($permissions);
-        return $this->sendResponse($role, 'Role Updated Successfully');
+        try {
+            $role = $this->repository->update($request->validate(), $role);
 
+            return $this->sendResponse($role, 'Role updated successfully');
+        } catch (Exception $exception) {
+            return $this->sendError(config('exception-message.system-error'));
+        }
     }
 
     /**
@@ -102,90 +111,36 @@ class RoleController extends Controller
      */
     public function destroy(Role $role)
     {
-        $role->delete();
-        return $this->sendResponse('', 'Role Successfully Deleted');
+        try {
+            $this->repository->destroy($role);
 
+            return $this->sendResponse('', 'Role successfully deleted');
+        } catch (Exception $exception) {
+            return $this->sendError(config('exception-message.system-error'));
+        }
     }
 
     public function tableData(Request $request)
     {
-        $user = Auth::user();
-        $order_by = $request->order;
-        $search = $request->search['value'];
-        $start = $request->start;
-        $length = $request->length;
-        $order_by_str = $order_by[0]['dir'];
+        try {
+            $tableData = $this->repository->tableData($request);
 
-        $columns = ['id', 'name', 'guard_name'];
-        $order_column = $columns[$order_by[0]['column']];
-
-        $roles = Role::tableData($order_column, $order_by_str, $start, $length);
-        if (is_null($search) || empty($search)) {
-            $roles = $roles->get();
-            $roles_count = Role::all()->count();
-        } else {
-            $roles = $roles->searchData($search)->get();
-            $roles_count = $roles->count();
+            return json_encode($tableData);
+        } catch (Exception $exception) {
+            return $this->sendError(config('exception-message.system-error'));
         }
-
-        $data[][] = array();
-        $i = 0;
-        $edit_btn = null;
-        $delete_btn = null;
-        $can_edit = ($user->hasPermissionTo('roles edit') || $user->hasAnyRole(['Super Admin','Admin'])) ? 1 : 0;
-        $can_delete = ($user->hasPermissionTo('roles delete') || $user->hasAnyRole(['Super Admin','Admin'])) ? 1 : 0;
-
-        foreach ($roles as $key => $role) {
-            if ($can_edit) {
-                $edit_btn = "<i class='icon-md icon-pencil mr-3' onclick=\"editPermission(this)\" data-id='{$role->id}' data-name='{$role->name}' data-permissions='{$role->permissions->pluck('name')}'></i>";
-            }
-            if ($can_delete) {
-                $url = "'roles/" . $role->id . "'";
-                $delete_btn = "<i class='icon-md icon-trash' onclick=\"FormOptions.deleteRecord(" . $role->id . ",$url,'roleTable')\"></i>";
-            }
-
-            $permissions=[];
-
-            $role = \Spatie\Permission\Models\Role::find($role->id);
-            $permissions_list = $role->getAllPermissions();
-
-            foreach ($permissions_list->pluck('name') as $permission) {
-//                $p = '<span class="badge badge-indigo mt-15 mr-10">'.$permission.'</span>';
-                array_push($permissions, $permission . ' ');
-            }
-
-            $data[$i] = array(
-                $role->name,
-                $permissions,
-                $role->guard_name,
-                $edit_btn . $delete_btn
-            );
-            $i++;
-        }
-
-        if ($roles_count == 0) {
-            $data = [];
-        }
-
-        $json_data = [
-            "draw" => intval($_REQUEST['draw']),
-            "recordsTotal" => intval($roles_count),
-            "recordsFiltered" => intval($roles_count),
-            "data" => $data
-        ];
-
-        return json_encode($json_data);
     }
 
     public function renderForm(Request $request)
     {
-        $id = $request->id;
-        $role = \Spatie\Permission\Models\Role::findById($id);
+        try {
+            $rolePermissions = $this->repository->getPermissions($request->validate());
+            $view = View::make('Administration::role.permissions-list', compact('rolePermissions'));
 
-        $permissions = $role->getAllPermissions();
-        $rolePermissions = collect($permissions->pluck('name'));
-        $view = View::make('Administration::role.permissions-list', compact('rolePermissions'));
-        $html = $view->render();
-        return $html;
+            return $view->render();
+        } catch (Exception $exception) {
+            return $this->sendError(config('exception-message.system-error'));
+        }
+
     }
 }
