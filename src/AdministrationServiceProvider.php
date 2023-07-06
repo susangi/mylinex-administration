@@ -6,6 +6,7 @@ use Administration\Models\Menu;
 use Administration\Models\Permission;
 use Administration\Models\Role;
 use Administration\Models\User;
+use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Mail\PendingMail;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -13,6 +14,7 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\Request;
+use Illuminate\Support\Str;
 
 class AdministrationServiceProvider extends ServiceProvider
 {
@@ -47,7 +49,15 @@ class AdministrationServiceProvider extends ServiceProvider
             __DIR__ . '/Assets/fonts' => public_path('fonts'),
             __DIR__ . '/Assets/plugins' => public_path('plugins'),
             __DIR__ . '/Database/seeds' => database_path('seeds'),
+            __DIR__ . '/Database/factories' => database_path('factories'),
+            __DIR__ . '/../tests' => database_path('tests'),
         ], 'public');
+
+        Factory::guessFactoryNamesUsing(function (string $model_name) {
+            $namespace = 'Database\\Factories\\';
+            $model_name = Str::afterLast($model_name, '\\');
+            return $namespace . $model_name . 'Factory';
+        });
 
         View::composer('*', function ($view) {
             $html = '';
