@@ -5,8 +5,13 @@
     "autoload": {
         "psr-4": {
             "Administration\\": "src/",
-            "Administration\\Database\\Seeds\\": "src/database/seeds/"
-        }
+            "Administration\\Database\\Seeds\\": "src/database/seeds/",
+            "Administration\\Database\\Factories\\": "src/database/factories/"
+        },
+        "classmap": [
+            "database/seeds",
+            "database/factories"
+        ]
     },
     "authors": [
         {
