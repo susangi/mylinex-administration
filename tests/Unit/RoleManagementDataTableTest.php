@@ -1,8 +1,6 @@
 <?php
 
 
-namespace Unit;
-
 use Administration\Repositories\RoleRepository;
 use App\Traits\AuthenticationHelperTrait;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -28,22 +26,10 @@ class RoleManagementDataTableTest extends TestCase
         parent::setUp();
         $this->user = $this->createSuperUser();
         $this->be($this->user);
-        Permission::firstOrCreate(
-            [
-                'name' => 'roles edit',
-                'guard_name' => 'web'
-            ]
-        );
-        Permission::firstOrCreate(
-            [
-                'name' => 'roles delete',
-                'guard_name' => 'web'
-            ]
-        );
-
+        Permission::firstOrCreate(['name' => 'roles edit', 'guard_name' => 'web']);
+        Permission::firstOrCreate(['name' => 'roles delete', 'guard_name' => 'web']);
         Role::factory()->count(10)->create();
         $_REQUEST['draw'] = 1;
-
         $this->repository = new RoleRepository();
     }
 

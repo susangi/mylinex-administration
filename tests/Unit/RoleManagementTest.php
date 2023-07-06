@@ -4,11 +4,8 @@ namespace Tests\Unit;
 
 use Administration\Repositories\RoleRepository;
 use App\Traits\AuthenticationHelperTrait;
-use Exception;
-use http\Client\Curl\User;
 use Illuminate\Database\QueryException;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Spatie\Permission\Exceptions\RoleAlreadyExists;
 use Spatie\Permission\Models\Permission;
 use Administration\Models\Role;
 use Tests\TestCase;
@@ -29,27 +26,14 @@ class RoleManagementTest extends TestCase
         parent::setUp();
         $this->user = $this->createSuperUser();
         $this->be($this->user);
-
-        $this->permission = Permission::firstOrCreate(
-            [
-                'name' => 'new permission index',
-                'guard_name' => 'web'
-            ]
-        );
-        $this->permission = Permission::firstOrCreate(
-            [
-                'name' => 'new permission1 index',
-                'guard_name' => 'web'
-            ]
-        );
-
+        $this->permission = Permission::firstOrCreate(['name' => 'permission', 'guard_name' => 'web']);
+        $this->permission = Permission::firstOrCreate(['name' => 'permission1', 'guard_name' => 'web']);
         $this->formData = [
             'name' => 'Role',
             'permissions' => [
                 Permission::orderBy('id', 'asc')->first()->name
             ]
         ];
-
         $this->repository = new RoleRepository();
     }
 
@@ -64,7 +48,7 @@ class RoleManagementTest extends TestCase
     public function if_user_can_create_a_role_successfully()
     {
         $this->repository->store($this->formData);
-        $role = \Spatie\Permission\Models\Role::where('name', $this->formData['name'])->first();
+        $role = Role::where('name', $this->formData['name'])->first();
 
         $this->assertDatabaseHas('roles', ['name' => $this->formData['name']]);
         $this->assertTrue($role->hasPermissionTo($this->formData['permissions'][0]));
@@ -96,7 +80,7 @@ class RoleManagementTest extends TestCase
         $permission = Permission::orderBy('id', 'desc')->first();
         $this->formData = array_merge($this->formData, ['name' => 'Test', 'permissions' => [$permission->name]]);
         $this->repository->update($this->formData, $role);
-        $role = \Spatie\Permission\Models\Role::where('name', $this->formData['name'])->first();
+        $role = Role::where('name', $this->formData['name'])->first();
 
         $this->assertDatabaseHas('roles', ['name' => $this->formData['name']]);
         $this->assertTrue($role->hasPermissionTo($this->formData['permissions'][0]));
