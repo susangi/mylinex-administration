@@ -6,11 +6,13 @@ namespace Administration\Controllers;
 use Administration\Models\Permission;
 use Administration\Models\Role;
 use Administration\Repositories\RoleRepository;
+use Administration\Requests\RoleStoreRequest;
+use Administration\Requests\RoleUpdateRequest;
 use App\Http\Controllers\Controller;
+use Exception;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\View;
-use Mockery\Exception;
+
 
 class RoleController extends Controller
 {
@@ -43,13 +45,13 @@ class RoleController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param \Illuminate\Http\Request $request
+     * @param \Illuminate\Http\RoleStoreRequest $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(RoleStoreRequest $request)
     {
         try {
-            $role = $this->repository->store($request->validate());
+            $role = $this->repository->store($request->validated());
 
             return $this->sendResponse
             (
@@ -86,15 +88,14 @@ class RoleController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param \Illuminate\Http\Request $request
+     * @param \Illuminate\Http\RoleUpdateRequest $request
      * @param Role $role
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Role $role)
+    public function update(RoleUpdateRequest $request, Role $role)
     {
-
         try {
-            $role = $this->repository->update($request->validate(), $role);
+            $role = $this->repository->update($request->validated(), $role);
 
             return $this->sendResponse($role, 'Role updated successfully');
         } catch (Exception $exception) {
@@ -114,7 +115,7 @@ class RoleController extends Controller
         try {
             $this->repository->destroy($role);
 
-            return $this->sendResponse('', 'Role successfully deleted');
+            return $this->sendResponse('', 'Role deleted successfully');
         } catch (Exception $exception) {
             return $this->sendError(config('exception-message.system-error'));
         }
@@ -134,7 +135,7 @@ class RoleController extends Controller
     public function renderForm(Request $request)
     {
         try {
-            $rolePermissions = $this->repository->getPermissions($request->validate());
+            $rolePermissions = $this->repository->getPermissions($request->all());
             $view = View::make('Administration::role.permissions-list', compact('rolePermissions'));
 
             return $view->render();
