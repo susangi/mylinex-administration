@@ -5,7 +5,7 @@ namespace Tests\Unit;
 use Administration\Models\User;
 use Administration\Services\PasswordPolicyService;
 use Administration\Exceptions\PasswordValidationException;
-use App\Traits\AuthenticationHelperTrait;
+use Administration\Traits\AuthenticationHelperTrait;
 use Carbon\Carbon;
 use Illuminate\Database\QueryException;
 use Illuminate\Foundation\Testing\RefreshDatabase;
