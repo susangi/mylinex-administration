@@ -96,13 +96,12 @@ class RoleRepository
             $data = [];
         }
 
-        return
-            [
-                "draw" => intval($_REQUEST['draw']),
-                "recordsTotal" => intval($roles_count),
-                "recordsFiltered" => intval($roles_count),
-                "data" => $data
-            ];
+        return $json_data = [
+            "draw" => intval($_REQUEST['draw']),
+            "recordsTotal" => intval($roles_count),
+            "recordsFiltered" => intval($roles_count),
+            "data" => $data
+        ];
     }
 
     public function getPermissions(array $request)
