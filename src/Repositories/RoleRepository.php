@@ -14,7 +14,6 @@ class RoleRepository
         $name = $request['name'];
         $permissions = $request['permissions'];
         $role = Role::create(['name' => $name, 'guard_name' => 'web']);
-        $role = \Spatie\Permission\Models\Role::find($role->id);
         $role->givePermissionTo($permissions);
 
         return $role;
@@ -25,7 +24,6 @@ class RoleRepository
         $role->name = $request['name'];
         $permissions = $request['permissions'];
         $role->save();
-        $role = \Spatie\Permission\Models\Role::find($role->id);
         $currentPermissions = $role->getAllPermissions();
         $role->revokePermissionTo($currentPermissions);
         $role->givePermissionTo($permissions);
@@ -38,7 +36,7 @@ class RoleRepository
         $role->delete();
     }
 
-    public function tableData(array $request)
+    public function tableData(object $request)
     {
         $user = Auth::user();
         $order_by = $request->order;
@@ -98,18 +96,19 @@ class RoleRepository
             $data = [];
         }
 
-        $json_data = [
-            "draw" => intval($_REQUEST['draw']),
-            "recordsTotal" => intval($roles_count),
-            "recordsFiltered" => intval($roles_count),
-            "data" => $data
-        ];
+        return
+            [
+                "draw" => intval($_REQUEST['draw']),
+                "recordsTotal" => intval($roles_count),
+                "recordsFiltered" => intval($roles_count),
+                "data" => $data
+            ];
     }
 
     public function getPermissions(array $request)
     {
         $id = $request['id'];
-        $role = \Spatie\Permission\Models\Role::findById($id);
+        $role = Role::findById($id);
         $permissions = $role->getAllPermissions();
         $rolePermissions = collect($permissions->pluck('name'));
 
