@@ -3,7 +3,7 @@
 namespace Tests\Unit;
 
 use Administration\Repositories\RoleRepository;
-use App\Traits\AuthenticationHelperTrait;
+use Administration\Traits\AuthenticationHelperTrait;
 use Illuminate\Database\QueryException;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Spatie\Permission\Models\Permission;

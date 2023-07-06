@@ -2,7 +2,7 @@
 
 
 use Administration\Repositories\RoleRepository;
-use App\Traits\AuthenticationHelperTrait;
+use Administration\Traits\AuthenticationHelperTrait;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Spatie\Permission\Models\Permission;
 use Administration\Models\Role;
