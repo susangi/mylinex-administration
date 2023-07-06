@@ -2,15 +2,17 @@
 
 namespace Administration\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Spatie\Activitylog\Traits\LogsActivity;
 use Spatie\Permission\Traits\HasPermissions;
 use Administration\Traits\ActivityLogOptionsTrait;
+use \Spatie\Permission\Models\Role as Roles;
 
-class Role extends Model
+class Role extends Roles
 {
-    use LogsActivity,HasPermissions, ActivityLogOptionsTrait;
-    protected static $logName = 'permissions';
+    use LogsActivity, HasPermissions, ActivityLogOptionsTrait, HasFactory;
+    protected static $logName = 'roles';
     protected static $logAttributes = ['*'];
 
     protected $fillable = ['name', 'guard_name'];
