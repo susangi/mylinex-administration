@@ -6,6 +6,9 @@ use Administration\Models\Menu;
 use Administration\Models\Permission;
 use Administration\Models\Role;
 use Administration\Models\User;
+use Administration\Repositories\UserRepository;
+use Administration\Requests\UserStoreRequest;
+use App\Exceptions\ExistUserException;
 use App\Http\Controllers\Controller;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -13,10 +16,13 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Administration\Services\PasswordPolicyService;
-use Mockery\Exception;
 
 class UserController extends Controller
 {
+    public function __construct(private UserRepository $repository)
+    {
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -24,18 +30,15 @@ class UserController extends Controller
      */
     public function index()
     {
-        $roles = Role::all()->pluck('name', 'name');
-        $type = env('APP_TYPE');
-        $menu = Menu::query();
-        if ($type == 'ALL') {
-            $menu->where('type', '=', 'SMSFW')->orWhere('type', '=', 'VOICEFW');
-        } else {
-            $menu->where('type', '=', $type);
-        }
+        $data = $this->repository->loadPageData();
 
-        $landing_page = $menu->where('url', '<>', null)->get()->pluck('title', 'id');
-
-        return view('Administration::users.index', compact('roles', 'landing_page'));
+        return view('Administration::users.index')
+                ->with(
+                    [
+                        'roles' => $data['roles'],
+                        'landing_page' => $data['landing_page']
+                    ]
+                );
     }
 
     /**
@@ -49,47 +52,21 @@ class UserController extends Controller
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Store a newly created user.
      *
-     * @param \Illuminate\Http\Request $request
+     * @param \Illuminate\Http\UserStoreRequest $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(UserStoreRequest $request)
     {
+        try {
+            $user = $this->repository->store($request->validated());
 
-        $is_api = $request->is_api == 'on' ? 1 : 0;
-        if (User::whereName($request->name)->withTrashed()->count() > 0) {
-            return $this->sendError('User name already exists!');
-        }
-
-        $exist_user = User::whereEmail($request->email)->withTrashed()->first();
-        if (!empty($exist_user)) {
-            if (User::whereName($request->name)->count() > 0) {
-                return $this->sendError('User name already exists!');
-            }
-            if ($exist_user->trashed()) {
-                $exist_user->name = $request->name;
-                $exist_user->updated_by = Auth::user()->id;
-                $exist_user->landing_page = $request->landing_page;
-                $exist_user->is_api = $is_api;
-                $exist_user->save();
-                $exist_user->syncRoles($request->role);
-                $exist_user->restore();
-
-                $pc = new PasswordPolicyService($exist_user);
-                $pc->passwordChangeProcess($request->password);
-
-                return $this->sendResponse($exist_user, 'User successfully added!');
-            }
-            return $this->sendError('Error', 'User already exits!');
-        } else {
-            $user = User::createUser($request->validate(), $is_api);
-
-            $pc = new PasswordPolicyService($user);
-            $pc->passwordChangeProcess($request['password']);
-
-            $user->syncRoles($request->role);
-            return $this->sendResponse($exist_user, 'User successfully added!');
+            return $this->sendResponse($user, 'User successfully added.');
+        } catch (ExistUserException $exception) {
+            return $this->sendWarning($exception->getMessage());
+        } catch (Exception $exception) {
+            return $this->sendError(config('exception-message.system-error'));
         }
     }
 
@@ -267,12 +244,11 @@ class UserController extends Controller
 
     public function unlock(Request $request, User $user)
     {
-        try {
-            User::unlockUserAccount($user);
-            return $this->sendResponse($user, 'User Unlocked Successfully');
-        } catch (Exception $exception) {
-            return $this->sendError(config('exception-message.system-error'));
-        }
+        $user->login_attempts = 0;
+        $user->last_login = Carbon::now();
+        $user->save();
+        return $this->sendResponse($user, 'User Unlocked Successfully');
+
     }
 
     public function recentPasswordValid(Request $request)
