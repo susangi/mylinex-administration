@@ -56,7 +56,7 @@ class RoleController extends Controller
             return $this->sendResponse
             (
                 $role,
-                ($role->wasRecentlyCreated) ? 'Role created successfully' : 'Role already exists'
+                ($role->wasRecentlyCreated) ? 'Role created successfully.' : 'Role already exists.'
             );
         } catch (Exception $exception) {
             return $this->sendError(config('exception-message.system-error'));
@@ -97,7 +97,7 @@ class RoleController extends Controller
         try {
             $role = $this->repository->update($request->validated(), $role);
 
-            return $this->sendResponse($role, 'Role updated successfully');
+            return $this->sendResponse($role, 'Role updated successfully.');
         } catch (Exception $exception) {
             return $this->sendError(config('exception-message.system-error'));
         }
@@ -115,7 +115,7 @@ class RoleController extends Controller
         try {
             $this->repository->destroy($role);
 
-            return $this->sendResponse('', 'Role deleted successfully');
+            return $this->sendResponse('', 'Role deleted successfully.');
         } catch (Exception $exception) {
             return $this->sendError(config('exception-message.system-error'));
         }
