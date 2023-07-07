@@ -13,6 +13,7 @@ class Menu extends Model
 {
     use WorksAsNestedSet,SoftDeletes, LogsActivity, ActivityLogOptionsTrait;
     protected $table = 'menu';
+    protected static $logAttributes = ['*'];
     protected $fillable = ['title', 'url', 'description', 'permissions', 'parent_id', 'left', 'right', 'depth'];
     protected $parentColumnName = 'parent_id';
     protected $leftColumnName = 'left';
